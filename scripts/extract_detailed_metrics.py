@@ -34,6 +34,11 @@ for algo, seed, r_name in RUNS:
 
     test_ev = s_data["test_evaluation"]
 
+    fm = s_data.get("final_metrics", {})
+    r5_global_norm = fm.get("geometry/global_update_norm")
+    r5_client_norms = fm.get("geometry/client_update_norms", [])
+    r5_alignments = fm.get("geometry/alignment_with_global", [])
+
     detailed_table.append({
         "algo": algo,
         "seed": seed,
@@ -45,6 +50,9 @@ for algo, seed, r_name in RUNS:
         "test_loss": test_ev["loss"],
         "test_macro_f1": test_ev["macro_f1"],
         "per_class": test_ev["per_class_accuracy"],
+        "r5_global_update_norm": r5_global_norm,
+        "r5_client_update_norms": r5_client_norms,
+        "r5_client_alignments": r5_alignments,
         "r5_time": r5_time,
         "r5_ram": r5_ram,
         "r5_rss": r5_rss,

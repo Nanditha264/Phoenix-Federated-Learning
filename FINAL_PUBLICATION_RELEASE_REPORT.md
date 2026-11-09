@@ -89,14 +89,16 @@ To prevent invalid `wandb sync` failures on application JSONL logs, a dedicated 
   - Automatically checks credentials without asking the user to paste keys into unsecured prompts.
 
 ### Primary Experiment Runs Prepared for Synchronization
-| # | Run Name | Algorithm | Seed | Rounds | Test Acc | Class 8 Acc | Global Update Norm | Status |
+| # | Run Name | Algorithm | Seed | Rounds | Test Acc | Class 8 Acc | Global Update Norm (R5) | Status |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1** | `fedavg_dir0.3_noise0.4_seed42` | FedAvg | 42 | 5 | 77.56% | 79.72% | 2.4838 | Ready to sync |
-| **2** | `fedprox_mu0.01_dir0.3_noise0.4_seed42` | FedProx ($\mu=0.01$) | 42 | 5 | 74.26% | 80.54% | 1.7388 | Ready to sync |
-| **3** | `fedavg_dir0.3_noise0.4_seed101` | FedAvg | 101 | 5 | 81.06% | 92.13% | 2.4838 | Ready to sync |
-| **4** | `fedprox_mu0.01_dir0.3_noise0.4_seed101` | FedProx ($\mu=0.01$) | 101 | 5 | 79.55% | 92.70% | 1.7388 | Ready to sync |
-| **5** | `fedavg_dir0.3_noise0.4_seed2024` | FedAvg | 2024 | 5 | 73.12% | 64.96% | 2.4838 | Ready to sync |
-| **6** | `fedprox_mu0.01_dir0.3_noise0.4_seed2024` | FedProx ($\mu=0.01$) | 2024 | 5 | 70.31% | 69.67% | 1.7388 | Ready to sync |
+| **1** | `fedavg_dir0.3_noise0.4_seed42` | FedAvg | 42 | 5 | 77.56% | 79.72% | **2.3855** | Ready to sync |
+| **2** | `fedprox_mu0.01_dir0.3_noise0.4_seed42` | FedProx ($\mu=0.01$) | 42 | 5 | 74.26% | 80.54% | **1.7438** | Ready to sync |
+| **3** | `fedavg_dir0.3_noise0.4_seed101` | FedAvg | 101 | 5 | 81.06% | 92.13% | **2.8297** | Ready to sync |
+| **4** | `fedprox_mu0.01_dir0.3_noise0.4_seed101` | FedProx ($\mu=0.01$) | 101 | 5 | 79.55% | 92.70% | **1.8879** | Ready to sync |
+| **5** | `fedavg_dir0.3_noise0.4_seed2024` | FedAvg | 2024 | 5 | 73.12% | 64.96% | **2.2361** | Ready to sync |
+| **6** | `fedprox_mu0.01_dir0.3_noise0.4_seed2024` | FedProx ($\mu=0.01$) | 2024 | 5 | 70.31% | 69.67% | **1.5846** | Ready to sync |
+| **Mean** | **FedAvg (All Seeds)** | **FedAvg** | **Mean $\pm$ Std** | **5** | **$77.25\% \pm 3.25\%$** | **$78.94\% \pm 11.11\%$** | **$2.4838 \pm 0.2521$** | **Aggregate** |
+| **Mean** | **FedProx (All Seeds)** | **FedProx** | **Mean $\pm$ Std** | **5** | **$74.71\% \pm 3.79\%$** | **$80.97\% \pm 9.41\%$** | **$1.7388 \pm 0.1239$** | **Aggregate** |
 
 ### Required Action to Complete W&B Cloud Synchronization:
 1. In your external command prompt / terminal, authenticate using the official W&B CLI:

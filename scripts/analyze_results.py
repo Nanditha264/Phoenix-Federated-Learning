@@ -87,12 +87,12 @@ for algo in ["fedavg", "fedprox"]:
         c0_aligns.append(c_align[0])
         clean_aligns.append(np.mean(c_align[1:]))
 
-    print(f"[{algo.upper()}] Update Geometry (Mean +/- Std):")
-    print(f"  Global Update Norm:       {np.mean(g_norms):.4f} +/- {np.std(g_norms):.4f}")
-    print(f"  Client 0 (Noisy) Norm:    {np.mean(c0_norms):.4f} +/- {np.std(c0_norms):.4f}")
-    print(f"  Clients 1-4 (Clean) Norm: {np.mean(clean_norms):.4f} +/- {np.std(clean_norms):.4f}")
-    print(f"  Client 0 Alignment:       {np.mean(c0_aligns):.4f} +/- {np.std(c0_aligns):.4f}")
-    print(f"  Clients 1-4 Alignment:    {np.mean(clean_aligns):.4f} +/- {np.std(clean_aligns):.4f}")
+    print(f"[{algo.upper()}] Update Geometry (Mean +/- Std across 3 Seeds):")
+    print(f"  Global Update Norm:       {np.mean(g_norms):.4f} +/- {np.std(g_norms):.4f} (Per seed: {[round(x, 4) for x in g_norms]})")
+    print(f"  Client 0 (Noisy) Norm:    {np.mean(c0_norms):.4f} +/- {np.std(c0_norms):.4f} (Per seed: {[round(x, 4) for x in c0_norms]})")
+    print(f"  Clients 1-4 (Clean) Norm: {np.mean(clean_norms):.4f} +/- {np.std(clean_norms):.4f} (Per seed: {[round(x, 4) for x in clean_norms]})")
+    print(f"  Client 0 Alignment:       {np.mean(c0_aligns):.4f} +/- {np.std(c0_aligns):.4f} (Per seed: {[round(x, 4) for x in c0_aligns]})")
+    print(f"  Clients 1-4 Alignment:    {np.mean(clean_aligns):.4f} +/- {np.std(clean_aligns):.4f} (Per seed: {[round(x, 4) for x in clean_aligns]})")
 
 # 4. Save analysis to JSON
 out_fp = BENCHMARK_DIR / "comparative_analysis.json"
