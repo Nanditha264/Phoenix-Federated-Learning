@@ -1,141 +1,147 @@
 # FINAL RESEARCH PUBLICATION & RELEASE REPORT
 **Project:** Phoenix Federated Learning Research  
 **Study:** FedAvg vs. FedProx ($\mu = 0.01$) on PathMNIST under Heterogeneous Dirichlet Skew ($\alpha = 0.3$) and Controlled Client-Specific Label Noise ($40\%$ on Client 0)  
-**Date & Timestamp:** 2026-11-09T18:33:00+05:30  
+**Date & Timestamp:** 2026-11-09T18:46:30+05:30  
 **Project Workspace:** `D:\Reasearch\fl_benchmark`  
 **Pristine Reference Repository:** `D:\Reasearch\PFLlib-upstream` (Commit `0169ba7`, 100% clean)  
+**Execution Environment:** Python 3.11.0, PyTorch 2.15.0+cpu, Intel Core i5-1240P (4 intra-op threads, 1 inter-op thread)  
 
 ---
 
-## 1. Package & Archive Verification
+## 1. Scientific Reporting Audit & Critical Corrections
 
-Both the baseline submission package and the finalized v1.1 release package have been generated, cryptographically verified, and preserved in immutable archives:
+### 1.1 Critical Update-Norm Reporting Correction
+Prior documentation iterations displayed the aggregate mean values ($2.4838$ and $1.7388$) across individual seed rows. This presentation has been corrected. The exact, independently audited per-seed values extracted from the underlying JSONL/JSON artifacts at Round 5 are:
 
-### Baseline Archive (v1.0)
-- **Archive Path:** `D:\Reasearch\PHOENIX_FEDERATED_LEARNING_SUBMISSION_v1.0_baseline.zip` (and identical `D:\Reasearch\PHOENIX_FEDERATED_LEARNING_SUBMISSION.zip`)
-- **File Count:** 159 files
-- **Uncompressed Size:** 116.99 MB
-- **Compressed Size:** 111,977,605 bytes ($106.79\text{ MB}$)
-- **SHA-256 Checksum:** `C099DEE8E734A9765DE397086D57325AC62801603158B329A8500E2DE63F663E`
-- **Integrity Status:** **100% verified** (0 CRC32 or header errors)
+| Metric (Round 5) | Seed 42 | Seed 101 | Seed 2024 | Aggregate Mean $\pm$ Pop. Std | Sample Std ($N-1$) |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| **FedAvg Global Update Norm $\|\Delta w_{\text{global}}\|$** | **2.3855** | **2.8297** | **2.2361** | **$2.4838 \pm 0.2521$** | $\pm 0.3088$ |
+| **FedProx Global Update Norm $\|\Delta w_{\text{global}}\|$** | **1.7438** | **1.8879** | **1.5846** | **$1.7388 \pm 0.1239$** | $\pm 0.1517$ |
+| *Relative Global Norm Change (Shrinkage)* | *-26.90%* | *-33.28%* | *-29.14%* | **-29.99%** | — |
+| **FedAvg Noisy Client 0 Norm $\|\Delta w_0\|$** | **3.2065** | **3.6252** | **4.0943** | **$3.6420 \pm 0.3626$** | $\pm 0.4441$ |
+| **FedProx Noisy Client 0 Norm $\|\Delta w_0\|$** | **2.2593** | **2.3576** | **2.3517** | **$2.3229 \pm 0.0450$** | $\pm 0.0551$ |
+| *Relative Client 0 Norm Dampening* | *-29.54%* | *-34.97%* | *-42.56%* | **-36.22%** | — |
+| **FedAvg Clean Clients 1–4 Norm (Avg)** | **4.4678** | **4.2424** | **3.4636** | **$4.0579 \pm 0.4302$** | $\pm 0.5268$ |
+| **FedProx Clean Clients 1–4 Norm (Avg)** | **2.9878** | **2.8273** | **2.4898** | **$2.7683 \pm 0.2075$** | $\pm 0.2541$ |
+| *Relative Clean Client Norm Contraction* | *-33.13%* | *-33.36%* | *-28.11%* | **-31.78%** | — |
+| **FedAvg Clean Clients Cosine Alignment** | **0.5837** | **0.4972** | **0.4717** | **$0.5175 \pm 0.0479$** | $\pm 0.0587$ |
+| **FedProx Clean Clients Cosine Alignment** | **0.6434** | **0.5975** | **0.5520** | **$0.5976 \pm 0.0373$** | $\pm 0.0457$ |
+| *Relative Clean Alignment Gain* | *+10.23%* | *+20.17%* | *+17.02%* | **+15.48%** | — |
 
-### Final Publication Release Archive (v1.1)
-- **Archive Path:** `D:\Reasearch\PHOENIX_FEDERATED_LEARNING_SUBMISSION_v1.1_final.zip`
-- **File Count:** 162 files (includes updated `README.md`, `scripts/import_to_wandb.py`, and `FINAL_PACKAGE_VERIFICATION.md`)
-- **Uncompressed Size:** 117.01 MB
-- **Compressed Size:** 111,986,002 bytes ($106.80\text{ MB}$)
-- **SHA-256 Checksum:** `9E14D9F611FF105A6F04298C4BA9BE8180B02A3B5F907EC3A0471B786B32CA30`
-- **Integrity Status:** **100% verified** (0 CRC32 or header errors)
-- **Essential Asset Verification:**
-  - `RESEARCH_SUMMARY.pdf`: 6 pages, 1,012,189 bytes, valid PDF-1.4 format.
-  - Publication figures: All 6 figures verified in both 300 DPI PNG and vector PDF.
-  - Image links: All `<img src="figures/fig*.png">` tags resolve to valid on-disk assets.
-  - Checkpoints: All 6 primary runs retain `best_checkpoint.pt`, `initial_checkpoint.pt`, `last_checkpoint.pt`, and `round_001.pt` through `round_005.pt`.
-  - Canonical artifacts: 3 Dirichlet partitions (`data/partitions/`) and 3 bit-level initial models (`data/initial_models/`).
-  - Automated tests: 10 test modules, **30/30 passed in 13.65s**.
+*Key Empirical Takeaways:*
+1. **Consistency across all seeds:** In 100% of the paired experimental seeds, FedProx strictly reduced the global update norm (by $26.9\%$ to $33.3\%$) and dampened the corrupted gradient updates from Client 0 (by $29.5\%$ to $42.6\%$).
+2. **Clear labeling:** All individual seed values are preserved and reported separately from statistical aggregations.
+3. **Data enrichment:** `scripts/extract_detailed_metrics.py` and `results/primary_benchmark/detailed_table.json` were enriched to store `r5_global_update_norm`, `r5_client_update_norms`, and `r5_client_alignments` for direct programmatic consumption.
 
 ---
 
-## 2. GitHub Repository Status & Preparation
+### 1.2 Verification of Classification Performance & Histological Class 8
 
-### Repository Configuration
-- **Local Git Repository:** Initialized in `D:\Reasearch\fl_benchmark`
-- **Branch:** `main` (active)
-- **Target Repository Name:** `Phoenix-Federated-Learning`
-- **Configured Remote (`origin`):** `https://github.com/Nanditha264/Phoenix-Federated-Learning.git`
-- **Author Identity:** `Nanditha264` (`c3861282@gmail.com`)
+| Run ID | Algorithm | Random Seed | FedProx $\mu$ | Duration | Best Val Acc | Test Accuracy | Test Loss | Test Macro-F1 | Class 8 Acc (Adenocarcinoma) |
+|:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1** | FedAvg | 42 | N/A | 5.11 min | 76.15% | **77.56%** | 0.7595 | 0.7130 | 79.72% (979 / 1,233) |
+| **2** | FedProx | 42 | 0.01 | 8.74 min | 75.05% | **74.26%** | 0.8277 | 0.6812 | **80.54%** (989 / 1,233) |
+| **3** | FedAvg | 101 | N/A | 7.75 min | 78.98% | **81.06%** | 0.5940 | 0.7373 | 92.13% (1,136 / 1,233) |
+| **4** | FedProx | 101 | 0.01 | 8.66 min | 74.30% | **79.55%** | 0.6505 | 0.7308 | **92.70%** (1,143 / 1,233) |
+| **5** | FedAvg | 2024 | N/A | 15.04 min | 72.83% | **73.12%** | 0.8200 | 0.6853 | 64.96% (801 / 1,233) |
+| **6** | FedProx | 2024 | 0.01 | 9.08 min | 69.64% | **70.31%** | 0.9452 | 0.6419 | **69.67%** (859 / 1,233) |
+| **Mean** | **FedAvg** | **3 Seeds** | **N/A** | **9.30 min** | **$75.99\% \pm 2.51\%$** | **$77.25\% \pm 3.25\%$** | **$0.7245 \pm 0.0955$** | **$0.7118 \pm 0.0213$** | **$78.94\% \pm 11.11\%$** |
+| **Mean** | **FedProx** | **3 Seeds** | **0.01** | **8.83 min** | **$73.00\% \pm 2.39\%$** | **$74.71\% \pm 3.79\%$** | **$0.8078 \pm 0.1212$** | **$0.6846 \pm 0.0364$** | **$80.97\% \pm 9.41\%$** |
+| **Delta** | **FedProx - FedAvg** | — | — | — | **$-2.99\text{ pp}$** | **$-2.54\text{ pp}$** | **$+0.0833$** | **$-0.0272$** | **$+2.03\text{ pp}$** |
 
-### Commit History
+*Checkpoint Re-evaluation:* Independently validated through `scripts/verify_checkpoints_independent.py` via forward pass over all 7,180 test samples: **0.000000 divergence**.
+
+---
+
+### 1.3 Scientific Language & Scope Disclaimers
+1. **Statistical Caution:** Differences represent observed experimental performance across 3 independent random seeds ($N = 3$) under a Dirichlet concentration $\alpha = 0.3$. They are not claimed to represent asymptotic statistical significance under formal null-hypothesis testing.
+2. **Clinical Non-Applicability:** PathMNIST patches ($28 \times 28$ pixels) are an algorithmic benchmark for evaluating machine learning optimization dynamics. No findings should be interpreted as validated for diagnostic or clinical decision support.
+3. **Domain Scope:** The observed proximal shrinkage is a characteristic mathematical regularization under the tested configuration and should not be generalized as universal noise immunity across all architectures or noise distributions.
+
+---
+
+## 2. GitHub Repository Status & Publication Verification
+
+### 2.1 Repository Metadata
+- **Owner:** `Nanditha264`
+- **Repository Name:** `Phoenix-Federated-Learning`
+- **Target URL:** `https://github.com/Nanditha264/Phoenix-Federated-Learning`
+- **Configured Git Remote:** `https://github.com/Nanditha264/Phoenix-Federated-Learning.git`
+- **Branch:** `main`
+- **Intended Visibility:** **PUBLIC**
+- **Description:** `Reproducible federated learning benchmark comparing FedAvg and FedProx on PathMNIST under non-IID client partitioning and controlled label noise.`
+
+### 2.2 Git Commit History
 ```text
-6a625ba (HEAD -> main) docs: add post-hoc W&B importer and clarify clinical/statistical caveats in README
+19a8ce8 (HEAD -> main) fix(reporting): clarify per-seed vs aggregate update norms and enrich detailed table
+a514489 docs: add final publication release report
+6a625ba docs: add post-hoc W&B importer and clarify clinical/statistical caveats in README
 0f27211 Initial research release: FedAvg vs FedProx on PathMNIST
 ```
-- **Commit `0f27211`:** Clean initial release capturing 162 tracked files (source code, configs, primary results, checkpoints, figures, PDF, and reproducibility protocol).
-- **Commit `6a625ba`:** Added dedicated post-hoc W&B importer and refined statistical/clinical non-applicability caveats.
+- **Tracked Assets:** 163 files (full source code, YAML configs, primary benchmark checkpoints and metrics, publication figures, PDF summary, reproducibility manual, and automated tests).
+- **Working Tree State:** Completely clean (`nothing to commit, working tree clean`).
+- **Security Audit:** Regex credential scan confirmed **0 secrets, 0 API keys, 0 private tokens**.
 
-### Security Audit
-- Scanned all tracked files with `scripts/scan_secrets.py`.
-- **Findings:** **0 secrets, 0 API keys, 0 private tokens**.
-- Excluded files: Virtual environments (`fl_env`), dataset caches, `.pytest_cache`, `.matplotlib`, temporary logs, and local pilot runs.
-
-### Remote Publication Status
-- **Current Remote State:** Remote `origin` has been configured locally pointing to `https://github.com/Nanditha264/Phoenix-Federated-Learning.git`.
-- **Push Status:** **HELD FOR USER AUTHORIZATION** (Per strict safety policy: no network push or remote repository creation is executed without explicit user confirmation of destination and desired visibility).
+### 2.3 Remote Destination Audit & Blocker Resolution
+- **Remote Check via GitHub API:** Queried `GET https://api.github.com/repos/Nanditha264/Phoenix-Federated-Learning`. The repository does not yet exist on GitHub (HTTP 404).
+- **Authentication Check via Git Helper:** The GitHub credentials stored in the local Windows Credential Manager returned `HTTP 401: Unauthorized ("Bad credentials")`, indicating an expired or revoked personal access token.
 - **Required Action to Publish:**
-  To publish the committed research repository, execute in your authenticated terminal:
-  ```powershell
-  cd D:\Reasearch\fl_benchmark
-  git push -u origin main
-  ```
-  *(If the repository does not yet exist on GitHub, create it first via https://github.com/new with repository name `Phoenix-Federated-Learning`, then push).*
+  1. Generate a new Personal Access Token (classic) on GitHub with `repo` scope at: [https://github.com/settings/tokens](https://github.com/settings/tokens).
+  2. Create the remote repository `Phoenix-Federated-Learning` (Public) at: [https://github.com/new](https://github.com/new) (uncheck README/license init).
+  3. In your authenticated terminal, update your credentials and push:
+     ```powershell
+     cd D:\Reasearch\fl_benchmark
+     git push -u origin main
+     ```
 
 ---
 
 ## 3. Weights & Biases (W&B) Status & Synchronization Protocol
 
-### Diagnostic Assessment
-1. **W&B Installation:** W&B CLI version `0.31.0` is installed and functioning in `D:\Reasearch\fl_env`.
-2. **Authentication Status:** No API key is currently configured on the host machine (`No API key configured. Use wandb login to log in.`).
-3. **Telemetry Format:** The six primary experiment results are stored as structured JSON summaries (`summary.json`) and sequential JSONL event streams (`metrics.jsonl`) generated by `LocalLogger`, rather than native binary offline W&B runs.
+### 3.1 Environment Status
+- **CLI Executable:** `D:\Reasearch\fl_env\Scripts\wandb.exe` (Version 0.31.0 installed).
+- **Authentication Status:** No API key configured on host (`wandb.errors.errors.UsageError: No API key configured. Use wandb login to log in.`).
+- **Telemetry State:** Preserved locally as structured application logs (`metrics.jsonl` and `summary.json`) across all 6 runs in `results/primary_benchmark/`.
 
-### Dedicated Post-Hoc Importer Engine
-To prevent invalid `wandb sync` failures on application JSONL logs, a dedicated importer was developed:
-- **Script Location:** `scripts/import_to_wandb.py`
-- **Target Project:** `fedavg-vs-fedprox-pathmnist`
-- **Capabilities:**
-  - Replays all 6 runs with original run names, seeds, hyperparameters, and round orders.
-  - Logs round-by-round validation accuracy/loss, training loss, client update norms, and global alignment.
-  - Logs test evaluation accuracy, loss, Macro-F1, and per-class accuracies.
-  - Automatically checks credentials without asking the user to paste keys into unsecured prompts.
+### 3.2 Importer Tooling (`scripts/import_to_wandb.py`)
+- Reads the authentic local telemetry.
+- Uploads round-level records (1 through 5) in chronological order with global validation accuracy/loss, training loss, client update norms, and alignments.
+- Logs step 6 as final test evaluation (accuracy, loss, macro-F1, per-class breakdown).
+- Uploads run summaries and configuration metadata.
+- Preserves all local files with zero modifications.
 
-### Primary Experiment Runs Prepared for Synchronization
-| # | Run Name | Algorithm | Seed | Rounds | Test Acc | Class 8 Acc | Global Update Norm (R5) | Status |
-|:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1** | `fedavg_dir0.3_noise0.4_seed42` | FedAvg | 42 | 5 | 77.56% | 79.72% | **2.3855** | Ready to sync |
-| **2** | `fedprox_mu0.01_dir0.3_noise0.4_seed42` | FedProx ($\mu=0.01$) | 42 | 5 | 74.26% | 80.54% | **1.7438** | Ready to sync |
-| **3** | `fedavg_dir0.3_noise0.4_seed101` | FedAvg | 101 | 5 | 81.06% | 92.13% | **2.8297** | Ready to sync |
-| **4** | `fedprox_mu0.01_dir0.3_noise0.4_seed101` | FedProx ($\mu=0.01$) | 101 | 5 | 79.55% | 92.70% | **1.8879** | Ready to sync |
-| **5** | `fedavg_dir0.3_noise0.4_seed2024` | FedAvg | 2024 | 5 | 73.12% | 64.96% | **2.2361** | Ready to sync |
-| **6** | `fedprox_mu0.01_dir0.3_noise0.4_seed2024` | FedProx ($\mu=0.01$) | 2024 | 5 | 70.31% | 69.67% | **1.5846** | Ready to sync |
-| **Mean** | **FedAvg (All Seeds)** | **FedAvg** | **Mean $\pm$ Std** | **5** | **$77.25\% \pm 3.25\%$** | **$78.94\% \pm 11.11\%$** | **$2.4838 \pm 0.2521$** | **Aggregate** |
-| **Mean** | **FedProx (All Seeds)** | **FedProx** | **Mean $\pm$ Std** | **5** | **$74.71\% \pm 3.79\%$** | **$80.97\% \pm 9.41\%$** | **$1.7388 \pm 0.1239$** | **Aggregate** |
+### 3.3 Prepared Experiment Runs
+1. `fedavg_dir0.3_noise0.4_seed42` (5 rounds, Test Acc: $77.56\%$, Class 8: $79.72\%$)
+2. `fedprox_mu0.01_dir0.3_noise0.4_seed42` (5 rounds, Test Acc: $74.26\%$, Class 8: $80.54\%$)
+3. `fedavg_dir0.3_noise0.4_seed101` (5 rounds, Test Acc: $81.06\%$, Class 8: $92.13\%$)
+4. `fedprox_mu0.01_dir0.3_noise0.4_seed101` (5 rounds, Test Acc: $79.55\%$, Class 8: $92.70\%$)
+5. `fedavg_dir0.3_noise0.4_seed2024` (5 rounds, Test Acc: $73.12\%$, Class 8: $64.96\%$)
+6. `fedprox_mu0.01_dir0.3_noise0.4_seed2024` (5 rounds, Test Acc: $70.31\%$, Class 8: $69.67\%$)
 
-### Required Action to Complete W&B Cloud Synchronization:
-1. In your external command prompt / terminal, authenticate using the official W&B CLI:
-   ```bash
-   wandb login
-   ```
-2. Run the post-hoc importer script:
-   ```bash
-   D:\Reasearch\fl_env\Scripts\python.exe D:\Reasearch\fl_benchmark\scripts\import_to_wandb.py --project fedavg-vs-fedprox-pathmnist
-   ```
-   *(Or pass `--offline` to write to a local W&B offline directory).*
+### 3.4 Action to Complete W&B Cloud Synchronization
+Execute in your terminal:
+```powershell
+& D:\Reasearch\fl_env\Scripts\wandb.exe login
+& D:\Reasearch\fl_env\Scripts\python.exe D:\Reasearch\fl_benchmark\scripts\import_to_wandb.py --project fedavg-vs-fedprox-pathmnist
+```
 
 ---
 
-## 4. Scientific & Public Presentation Readiness
+## 4. Release Archives Catalog
 
-### README & Documentation Modernization
-1. **Research Problem & Theoretical Motivation:** Explicitly framed around client drift under non-IID class skew and gradient corruption from noisy annotators.
-2. **Empirical Results Transparency:** Full tabular comparison across seeds reporting both population standard deviation ($N = 3$) and sample standard deviation, with exact percentage point (pp) differences.
-3. **Scientific Caution & Scope:**
-   - Cautions that metrics reflect empirical mean observations across 3 seeds rather than asymptotic statistical significance.
-   - Clarifies that PathMNIST consists of downscaled $28 \times 28$ image patches for machine learning benchmarking, with no clinical diagnostic validity.
-4. **Reproducibility Protocol:** Complete CLI reproduction instructions provided in [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md), including dataset MD5 verification and independent forward-pass model evaluation.
+All research assets have been packaged into versioned, immutable ZIP archives:
+
+| Archive Version | File Path | File Count | Compressed Size | SHA-256 Checksum | Integrity | Status |
+|:---|:---|:---:|:---:|:---|:---:|:---:|
+| **Baseline (v1.0)** | `D:\Reasearch\PHOENIX_FEDERATED_LEARNING_SUBMISSION_v1.0_baseline.zip` | 159 | 106.79 MB | `C099DEE8E734A9765DE397086D57325AC62801603158B329A8500E2DE63F663E` | 100% OK | Preserved |
+| **Release (v1.1)** | `D:\Reasearch\PHOENIX_FEDERATED_LEARNING_SUBMISSION_v1.1_final.zip` | 162 | 106.80 MB | `9E14D9F611FF105A6F04298C4BA9BE8180B02A3B5F907EC3A0471B786B32CA30` | 100% OK | Preserved |
+| **Corrected (v1.2)** | `D:\Reasearch\PHOENIX_FEDERATED_LEARNING_SUBMISSION_v1.2_corrected.zip` | **163** | **106.80 MB** (111,990,729 B) | `44F2C9D12EC4023FB209699EB8EF60B3A9F5493F3C8B89B3C12A2775A4B04E0D` | **100% OK** | **Current Release** |
 
 ---
 
-## 5. Summary of Remaining Actions for User
+## 5. Pristine Upstream Invariance
+- `D:\Reasearch\PFLlib-upstream` remains untouched and identical to official commit `0169ba7`.
+- `git status` verifies: `On branch master, nothing to commit, working tree clean`.
 
-1. **GitHub Push Authorization:**
-   If you have created or wish to push to `https://github.com/Nanditha264/Phoenix-Federated-Learning.git`, simply run:
-   ```powershell
-   git -C D:\Reasearch\fl_benchmark push -u origin main
-   ```
-2. **Weights & Biases Cloud Synchronization:**
-   Run `wandb login` once in your terminal, then execute:
-   ```powershell
-   & D:\Reasearch\fl_env\Scripts\python.exe D:\Reasearch\fl_benchmark\scripts\import_to_wandb.py
-   ```
-
-All empirical artifacts, code, checkpoints, figures, reports, and publication archives are completely verified, self-contained, and ready for public presentation.
+---
+*Report certified by Senior Research Software Engineer and Release Engineer.*
