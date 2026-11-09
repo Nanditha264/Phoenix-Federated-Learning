@@ -61,7 +61,6 @@ def check_wandb_auth():
     """
     try:
         import wandb
-        # Check environment variable first
         if os.environ.get("WANDB_API_KEY"):
             return True, "API key detected in environment"
         api = wandb.Api()
@@ -69,6 +68,25 @@ def check_wandb_auth():
         return True, getattr(viewer, "entity", "authenticated_user")
     except Exception as e:
         return False, str(e)
+
+
+def check_existing_wandb_runs(project: str, entity: str = None):
+    """
+    Query W&B project to find existing runs and prevent duplicates.
+    Returns dict of {run_name: run_object}.
+    """
+    import wandb
+    existing = {}
+    try:
+        api = wandb.Api()
+        path = f"{entity}/{project}" if entity else project
+        runs = api.runs(path)
+        for r in runs:
+            existing[r.name] = r
+            existing[r.id] = r
+    except Exception:
+        pass
+    return existing
 
 
 def import_run(run_info: dict, project: str, entity: str = None, offline: bool = False):
@@ -199,6 +217,7 @@ def main():
     parser.add_argument("--project", default="fedavg-vs-fedprox-pathmnist", help="W&B Project Name")
     parser.add_argument("--entity", default=None, help="W&B Entity / Team Name")
     parser.add_argument("--offline", action="store_true", help="Log runs locally in W&B offline directory")
+    parser.add_argument("--force", action="store_true", help="Force re-import even if runs already exist in project")
     args = parser.parse_args()
 
     print("=" * 80)
@@ -222,8 +241,23 @@ def main():
         sys.exit(2)
 
     print(f"Authentication verified: {info}")
+    
+    existing_runs = {}
+    if not args.offline:
+        existing_runs = check_existing_wandb_runs(project=args.project, entity=args.entity)
+        if existing_runs:
+            print(f"Found {len(existing_runs)} existing runs in project '{args.project}'.")
+
     run_urls = []
     for run_info in RUNS:
+        run_name = run_info["name"]
+        run_id = f"pathmnist_{run_name}"
+        if not args.force and (run_name in existing_runs or run_id in existing_runs):
+            print(f"[SKIP] Run '{run_name}' already exists in W&B project. Skipping to prevent duplicate records.")
+            ex = existing_runs.get(run_name, existing_runs.get(run_id))
+            run_urls.append((run_name, getattr(ex, "url", "existing_run")))
+            continue
+            
         url = import_run(run_info, project=args.project, entity=args.entity, offline=args.offline)
         run_urls.append((run_info["name"], url))
 
