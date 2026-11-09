@@ -265,13 +265,16 @@ python scripts/run_primary_matrix.py
 python scripts/verify_checkpoints_independent.py
 ```
 
-### 6. Re-generate Publication Figures & Research Summary PDF
+### 6. Re-generate Publication Figures & Research Summary PDFs
 ```bash
 # Generate PNG (300 DPI) and PDF figures
 python scripts/generate_publication_figures.py
 
-# Compile formal research summary PDF
+# Compile formal one-page research benchmark summary PDF
 python scripts/generate_research_summary_pdf.py
+
+# Compile formal one-page Reactive Optimizers literature analysis PDF
+python scripts/generate_reactive_optimizers_summary_pdf.py
 ```
 
 ---
@@ -308,7 +311,8 @@ Phoenix-Federated-Learning/
 │
 ├── docs/                               # Formal research deliverables
 │   ├── reproducibility.md              # Detailed reproduction protocol
-│   └── research_summary.pdf            # 6-page formal research summary report
+│   ├── research_summary.pdf            # One-page formal research benchmark summary PDF
+│   └── reactive_optimizers_summary.pdf # One-page Reactive Optimizers (OPAL) reading summary PDF
 │
 ├── figures/                            # 300 DPI PNG & vector PDF publication figures
 │   ├── fig1_val_accuracy_vs_rounds.{png,pdf}
@@ -332,7 +336,8 @@ Phoenix-Federated-Learning/
 │   ├── extract_detailed_metrics.py     # JSON metric extractor
 │   ├── generate_dataset.py             # Dataset setup & partition verifier
 │   ├── generate_publication_figures.py # Publication figure exporter
-│   ├── generate_research_summary_pdf.py# PDF report compiler
+│   ├── generate_reactive_optimizers_summary_pdf.py # Reactive Optimizers reading summary PDF compiler
+│   ├── generate_research_summary_pdf.py# Research summary PDF compiler
 │   ├── import_to_wandb.py              # W&B post-hoc telemetry importer
 │   ├── register_initial_models.py      # Canonical model initialization script
 │   ├── run_experiment.py               # Flexible experiment launcher
@@ -408,6 +413,7 @@ Phoenix-Federated-Learning/
 2. **Li, T., Sahu, A. K., Zaheer, M., Sanjabi, M., Talwalkar, A., & Smith, V.** (2020). Federated Optimization in Heterogeneous Networks. *Proceedings of Machine Learning and Systems (MLSys)*.
 3. **Yang, J., Shi, R., Wei, D., Liu, Z., Zhao, L., Ke, B., ... & Ni, B.** (2023). MedMNIST v2-A large-scale lightweight benchmark for 2D and 3D biomedical image classification. *Scientific Data*, 10(1), 41.
 4. **Zhang, J., et al.** (2023). PFLlib: A Personalized Federated Learning Benchmark. *arXiv preprint arXiv:2307.03450*.
+5. **Bai, X., Liang, J.-H., Teoh, J., & Sitzmann, V.** (2026). Reactive Optimizers. *arXiv preprint arXiv:2610.33826*.
 
 ---
 
