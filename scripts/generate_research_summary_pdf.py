@@ -148,8 +148,8 @@ def build_pdf():
     note_text = (
         "Key Quantitative Takeaways:\n"
         "1. Predictive Performance: FedAvg achieves higher average test accuracy (+2.54 pp) and Macro-F1 (+0.0272) across the 5-round budget.\n"
-        "2. Proximal Shrinkage: FedProx achieves -29.99% global update norm reduction and -36.22% noise dampening on Client 0.\n"
-        "3. Consensus & Sensitivity: FedProx yields +15.48% higher clean client alignment and +2.03 pp gain on Class 8 (Colorectal Tumor)."
+        "2. Observed Norm Differences: FedProx exhibits -29.99% global update norm magnitude and -36.22% lower norm on corrupted Client 0.\n"
+        "3. Directional Alignment & Class 8: FedProx yields +15.48% higher clean client alignment and +2.03 pp gain on PathMNIST Class 8."
     )
     y_r = draw_text_block(ax, tx, note_y, note_text, width_chars=55, fontsize=6.2, linespacing=1.20, color="#334155")
 
@@ -166,7 +166,7 @@ def build_pdf():
         "• Proximal Shrinkage Effect: FedProx strictly enforced parameter regularization, contracting global update magnitude by 29.99% (2.4838 -> 1.7388) and restraining the noisy client's update norm by 36.22% (3.6420 -> 2.3229). This provides direct empirical validation of proximal constraint under label corruption.",
         "• Gradient Alignment & Consensus: By penalizing local wandering, FedProx prevented clean clients from overshooting into discordant subspaces, improving clean-client directional cosine alignment with the global consensus from 0.5175 to 0.5976 (+15.48%).",
         "• The Optimization-Regularization Trade-off: Within a 5-round computational budget, the proximal penalty (mu=0.01) introduces an optimization drag: by continuously tethering clients to the global model, FedProx accumulated fewer effective exploratory steps, resulting in -2.54 pp lower overall accuracy than unconstrained FedAvg.",
-        "• Tumor Sensitivity Preservation: On Class 8 (Adenocarcinoma), FedProx outperformed FedAvg (80.97% vs. 78.94%, +2.03 pp). Proximal stability prevented noisy client updates from degrading decision boundaries for underrepresented clinical classes."
+        "• Class 8 Accuracy: On PathMNIST Class 8 (Colorectal Adenocarcinoma), FedProx attained higher test accuracy than FedAvg (80.97% vs. 78.94%, +2.03 pp). Observed update regularization helped maintain decision boundaries for this underrepresented class. (No clinical validity implied)."
     ]
     for bullet in sec4_text:
         y_full = draw_text_block(ax, 0.045, y_full, bullet, width_chars=124, fontsize=6.3, linespacing=1.18, subsequent_indent="  ")

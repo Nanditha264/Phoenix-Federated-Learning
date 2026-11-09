@@ -150,14 +150,14 @@ Input: (3, 28, 28)
 | **Test Loss** | **0.7245 ± 0.0955** | 0.8078 ± 0.1212 | +0.0833 | FedAvg converges faster initially |
 | **Test Macro-F1** | **0.7118 ± 0.0213** | 0.6846 ± 0.0364 | -0.0272 | Consistent across classes |
 | **Best Validation Accuracy** | **75.99%** | 73.00% | -2.99 pp | Observed across communication rounds |
-| **Global Update Norm $\|\Delta w_{\text{global}}\|$** | 2.4838 ± 0.2521 | **1.7388 ± 0.1239** | **-29.99%** | **Definitive proximal shrinkage** |
-| **Noisy Client 0 Norm $\|\Delta w_0\|$** | 3.6420 ± 0.3626 | **2.3229 ± 0.0450** | **-36.22%** | **Strong noise dampening** |
-| **Clean Clients 1–4 Norm** | 4.0579 ± 0.4302 | **2.7683 ± 0.2075** | **-31.78%** | Drift constraint on clean nodes |
-| **Clean Clients Cosine Alignment** | 0.5175 ± 0.0479 | **0.5976 ± 0.0373** | **+15.48%** | Tighter consensus alignment |
+| **Global Update Norm $\|\Delta w_{\text{global}}\|$** | 2.4838 ± 0.2521 | **1.7388 ± 0.1239** | **-29.99%** | Observed norm reduction under proximal penalty |
+| **Noisy Client 0 Norm $\|\Delta w_0\|$** | 3.6420 ± 0.3626 | **2.3229 ± 0.0450** | **-36.22%** | Observed norm difference on noisy client |
+| **Clean Clients 1–4 Norm** | 4.0579 ± 0.4302 | **2.7683 ± 0.2075** | **-31.78%** | Observed norm difference on clean nodes |
+| **Clean Clients Cosine Alignment** | 0.5175 ± 0.0479 | **0.5976 ± 0.0373** | **+15.48%** | Observed directional alignment difference |
 
 ### Individual Trial Breakdown
 
-| Run ID | Algorithm | Seed | Best Val Acc | Test Acc | Test Loss | Test Macro-F1 | Class 8 Acc (Tumor) | Global Norm (R5) |
+| Run ID | Algorithm | Seed | Best Val Acc | Test Acc | Test Loss | Test Macro-F1 | Class 8 Acc (PathMNIST) | Global Norm (R5) |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **1** | FedAvg | 42 | 76.15% | **77.56%** | 0.7595 | 0.7130 | 79.72% | 2.3855 |
 | **2** | FedProx | 42 | 75.05% | 74.26% | 0.8277 | 0.6812 | **80.54%** | **1.7438** |
@@ -172,18 +172,18 @@ Input: (3, 28, 28)
 
 - **Optimization Pace:** Both algorithms achieved monotonic convergence over the 5 rounds. However, in this 5-round horizon, FedAvg achieved higher test accuracy (+2.54 pp).
 - **The Proximal Regularization Tradeoff:** The proximal penalty $\frac{\mu}{2}\|w - w^t\|^2$ penalizes displacement from $w^t$. Early in training, when the consensus is far from the empirical optimum, this penalty acts as a conservative constraint, slowing convergence speed in short round budgets.
-- **Histological Class Performance:** On specific malignant tissue—**colorectal adenocarcinoma epithelium (Class 8)**—FedProx consistently outperformed FedAvg across all three seeds ($80.97\%$ vs $78.94\%$, $+2.03\text{ pp}$ gain), suggesting that proximal regularization protected tumor representation features from degradation under label corruption.
+- **Class-Specific Accuracy (Class 8):** On PathMNIST Class 8 (colorectal adenocarcinoma), FedProx achieved higher average test accuracy across the three seeds ($80.97\%$ vs $78.94\%$, $+2.03\text{ pp}$ difference). Note: This is an algorithmic observation on $28 \times 28$ image patches and does not establish clinical diagnostic validity.
 
 ---
 
 ## 13. Update Norm & Cosine Alignment Analysis
 
-Tracking parameter displacement vectors $\Delta w_k^t = w_k^{t, E} - w^t$ provides mathematical confirmation of FedProx's proximal mechanics:
+Tracking parameter displacement vectors $\Delta w_k^t = w_k^{t, E} - w^t$ provides quantitative measurement of observed update geometry differences:
 
-1. **Global Update Shrinkage:** FedProx reduced the global update norm from $2.4838 \pm 0.2521$ to $1.7388 \pm 0.1239$ (**$-29.99\%$ shrinkage**).
-2. **Noise Gradient Dampening:** On corrupted Client 0, FedProx reduced parameter displacement from $3.6420 \pm 0.3626$ to $2.3229 \pm 0.0450$ (**$-36.22\%$ dampening**), constraining corrupt updates.
-3. **Clean Alignment Improvement:** Clean clients (Clients 1–4) exhibited higher directional cosine alignment with the global consensus under FedProx ($0.5976 \pm 0.0373$ vs $0.5175 \pm 0.0479$, a **$+15.48\%$ gain**).
-4. **Noisy Client Decoupling:** Client 0 exhibited low cosine alignment under both algorithms ($\approx 0.24$), demonstrating that label noise misaligns update trajectories relative to the consensus manifold.
+1. **Observed Global Update Norm Difference:** Under FedProx ($\mu=0.01$), the observed mean global update norm was $1.7388 \pm 0.1239$ compared to $2.4838 \pm 0.2521$ for FedAvg ($29.99\%$ lower magnitude).
+2. **Client 0 Observed Norm Difference:** On Client 0 (which had 40% label noise in training data), the observed update norm under FedProx was $2.3229 \pm 0.0450$ compared to $3.6420 \pm 0.3626$ under FedAvg ($36.22\%$ lower magnitude).
+3. **Clean Client Directional Alignment:** Clean clients (Clients 1–4) exhibited higher directional cosine alignment with the aggregated global update vector under FedProx ($0.5976 \pm 0.0373$ vs $0.5175 \pm 0.0479$, $+15.48\%$ higher average alignment).
+4. **Noisy Client Alignment:** Client 0 exhibited low cosine alignment under both algorithms ($\approx 0.24$), reflecting that label noise in local training data produces update trajectories that diverge from the consensus manifold.
 
 ---
 
@@ -304,7 +304,22 @@ Each run records complete 5-round histories and comprehensive summary evaluation
 - **Global Optimization:** Training loss (`train/avg_loss`), global validation accuracy (`eval/val_acc`), and loss (`eval/val_loss`) per round.
 - **Update Geometry:** Global update norm (`geometry/global_update_norm`), individual client update norms (`geometry/client_update_norm/client_{0..4}`), and directional cosine alignment with the consensus vector (`geometry/alignment_with_global/client_{0..4}`).
 - **Test Set Evaluation:** Full evaluation on the 7,180 PathMNIST test samples (`test/accuracy`, `test/loss`, `test/macro_f1`, and per-class accuracies for Classes 0–8).
-- **Post-Hoc Client Validation:** Historical training runs logged client validation in sample-weighted aggregate form (`eval/client_mean_val_acc`, `eval/client_mean_val_loss`). To provide granular per-client metrics without modifying original telemetry, each run's retained `best_checkpoint.pt` was evaluated post-hoc across the 5 canonical client validation subsets and registered under `post_hoc_val/client_{0..4}_acc` and `post_hoc_val/client_{0..4}_loss`.
+- **Post-Hoc Validation Shard Evaluation:** Post-hoc evaluation of each best checkpoint on five deterministic, approximately equal-sized, disjoint shards of the official global validation split (registered under `post_hoc_val/client_{0..4}_acc` and `post_hoc_val/client_{0..4}_loss`).
+  - *Methodological Caveat:* These five shards are uniform partitions of the global validation set (10,004 samples); they do **not** reproduce the original client-specific non-IID training distributions.
+  - Client 0's noisy status refers strictly to its training partition (40% symmetric label noise); validation labels remain clean unmodified MedMNIST annotations.
+  - These measurements are post-hoc metrics on the final best checkpoints and do **not** constitute historical per-round client trajectories.
+
+### Status of Per-Client Per-Round Metric Requirement
+
+The fellowship screening specification requests per-client validation accuracy and loss for every communication round. Evaluators should note the following telemetry boundary:
+- **Available Every Round (Rounds 1–5):** Global validation accuracy/loss (`eval/val_acc`, `eval/val_loss`), sample-weighted mean validation accuracy/loss across clients (`eval/client_mean_val_acc`, `eval/client_mean_val_loss`), global update $L_2$ norm (`geometry/global_update_norm`), individual client update $L_2$ norms for Clients 0–4 (`geometry/client_update_norm/client_{0..4}`), individual client cosine alignments with consensus (`geometry/alignment_with_global/client_{0..4}`), and $5 \times 5$ pairwise cosine similarity matrices.
+- **Unavailable Historical Data:** Individual per-client validation accuracy and loss resolved separately for each individual round (Rounds 1–5). During original training, these values were computed internally but only their sample-weighted macro average was serialized to JSONL. Because intermediate round checkpoints (Rounds 1–4) were not retained, historical per-round individual curves cannot be recovered without complete re-execution.
+- In accordance with research integrity standards, these historical per-round values have **not** been fabricated, nor are the best-checkpoint post-hoc shard metrics presented as substitute per-round curves.
+
+### Key Deliverable Documents
+
+- **One-Page Research Summary PDF:** [`docs/research_summary.pdf`](docs/research_summary.pdf) — Complete, verified single-page executive summary covering benchmark motivation, PathMNIST Dirichlet protocol, primary metric tables, proximal shrinkage observations, and limitations.
+- **One-Page Reactive Optimizers Reading Summary PDF:** [`docs/reactive_optimizers_summary.pdf`](docs/reactive_optimizers_summary.pdf) — Complete, verified single-page critical review of Xingjian Bai et al. (MIT, arXiv:2610.33826, OPAL framework) answering Sections A (mechanism), B (technical limitations), and C (application to federated learning).
 
 ### Re-synchronizing Telemetry
 
@@ -425,7 +440,8 @@ Phoenix-Federated-Learning/
 1. **Short Communication Horizon ($R = 5$):** Experiments were capped at 5 communication rounds (10 local epochs per client) to execute reliably within local CPU hardware constraints. While FedAvg attained higher accuracy within this early window (+2.54 pp), asymptotic training ($R \ge 20$) may reveal benefits for FedProx as client drift compounds over extended horizons.
 2. **Fixed Proximal Penalty ($\mu = 0.01$):** A single fixed proximal coefficient was evaluated across all trials. Adaptive or decay-scheduled $\mu$ strategies may provide stability without constraining early convergence.
 3. **Statistical Sample Size ($N = 3$):** Results reflect empirical performance across 3 independent random seeds. They represent observed experimental trends rather than formal asymptotic statistical significance.
-4. **Clinical Non-Applicability:** PathMNIST patches ($28 \times 28$ pixels) are an algorithmic research benchmark. Findings evaluate machine learning optimization and regularization dynamics and must not be used for diagnostic or clinical decision support.
+4. **Clinical Non-Applicability:** PathMNIST patches ($28 \times 28$ pixels) are an algorithmic research benchmark. Findings evaluate machine learning optimization and regularization dynamics and must not be used for diagnostic or clinical decision support. They possess no demonstrated clinical diagnostic validity.
+5. **Absence of Historical Per-Round Individual Client Validation:** Historical per-client validation curves for rounds 1–5 were serialized only in sample-weighted aggregate format (`eval/client_mean_val_acc`, `eval/client_mean_val_loss`). Best-checkpoint evaluations on disjoint validation shards are post-hoc and do not replace historical round trajectories.
 
 ---
 

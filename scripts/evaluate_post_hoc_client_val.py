@@ -1,8 +1,13 @@
 """
-Post-Hoc Client Validation Evaluator.
-Computes post-hoc per-client validation accuracy, loss, and macro-F1
-for each of the 6 primary benchmark runs using their retained best_checkpoint.pt
-and exact canonical client validation partitions.
+Post-Hoc Validation Shard Evaluator.
+Computes post-hoc validation accuracy, loss, and macro-F1 for each of the 6 primary
+benchmark runs using their retained best_checkpoint.pt on five deterministic,
+approximately equal-sized, disjoint shards of the official global validation split.
+
+Important Methodological Notes:
+- The shards do not reproduce the original client-specific non-IID training distributions.
+- Client 0's noisy status refers to its training data, not corrupted validation labels.
+- These measurements are post-hoc best-checkpoint metrics, not historical per-round client metrics.
 """
 
 import json
@@ -60,9 +65,16 @@ def run_evaluation():
 
         res = client_evaluator.evaluate_clients(model)
         
-        # Format metrics cleanly
+        # Format metrics cleanly with precise scientific caveats
         run_res = {
-            "evaluation_type": "post_hoc_best_checkpoint_client_validation",
+            "evaluation_type": "post_hoc_best_checkpoint_validation_shards",
+            "methodology_note": (
+                "Post-hoc evaluation of each best checkpoint on five deterministic, approximately "
+                "equal-sized, disjoint shards of the official global validation split. "
+                "The shards do not reproduce the original client-specific non-IID training distributions. "
+                "Client 0 noisy status refers to its training partition, not validation labels. "
+                "These are post-hoc best-checkpoint metrics, not historical per-round client metrics."
+            ),
             "model_checkpoint": "best_checkpoint.pt",
             "seed": seed,
             "algorithm": algo,
@@ -70,13 +82,15 @@ def run_evaluation():
             "mean_val_loss": res["mean_val_loss"],
             "weighted_val_accuracy": res["weighted_val_accuracy"],
             "weighted_val_loss": res["weighted_val_loss"],
-            "per_client": {}
+            "shards": {}
         }
         for cid in range(5):
             c_res = res["per_client"][cid]
-            run_res["per_client"][str(cid)] = {
-                "client_id": cid,
-                "is_noisy": (cid == 0),
+            run_res["shards"][f"shard_{cid}"] = {
+                "shard_id": cid,
+                "client_training_counterpart": f"Client {cid}",
+                "counterpart_training_noise": "40% symmetric noise" if cid == 0 else "0% (clean)",
+                "validation_labels": "clean (unmodified official MedMNIST)",
                 "accuracy": round(c_res["accuracy"], 6),
                 "loss": round(c_res["loss"], 6),
                 "macro_f1": round(c_res["macro_f1"], 6),
@@ -92,13 +106,12 @@ def run_evaluation():
 
         print(f"[{r_name}] Mean Val Acc = {res['mean_val_accuracy']*100:.2f}%, Weighted = {res['weighted_val_accuracy']*100:.2f}%")
         for cid in range(5):
-            c = run_res["per_client"][str(cid)]
-            tag = "(40% Noise)" if cid == 0 else "(Clean)"
-            print(f"  Client {cid} {tag:11s}: Acc = {c['accuracy']*100:.2f}%, Loss = {c['loss']:.4f}, Macro-F1 = {c['macro_f1']:.4f}")
+            s = run_res["shards"][f"shard_{cid}"]
+            tag = "(Train Noise: 40%)" if cid == 0 else "(Train Clean)"
+            print(f"  Shard {cid} {tag:18s}: Acc = {s['accuracy']*100:.2f}%, Loss = {s['loss']:.4f}, Macro-F1 = {s['macro_f1']:.4f}")
 
-    # Summary table
     print("\n" + "=" * 80)
-    print("POST-HOC PER-CLIENT VALIDATION SUMMARY (BEST CHECKPOINTS)")
+    print("POST-HOC VALIDATION SHARDS SUMMARY (BEST CHECKPOINTS)")
     print("=" * 80)
     return results_all
 

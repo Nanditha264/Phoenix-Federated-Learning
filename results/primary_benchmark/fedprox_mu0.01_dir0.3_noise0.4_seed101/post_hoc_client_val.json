@@ -1,5 +1,6 @@
 {
-  "evaluation_type": "post_hoc_best_checkpoint_client_validation",
+  "evaluation_type": "post_hoc_best_checkpoint_validation_shards",
+  "methodology_note": "Post-hoc evaluation of each best checkpoint on five deterministic, approximately equal-sized, disjoint shards of the official global validation split. The shards do not reproduce the original client-specific non-IID training distributions. Client 0 noisy status refers to its training partition, not validation labels. These are post-hoc best-checkpoint metrics, not historical per-round client metrics.",
   "model_checkpoint": "best_checkpoint.pt",
   "seed": 101,
   "algorithm": "fedprox",
@@ -7,42 +8,52 @@
   "mean_val_loss": 0.679365,
   "weighted_val_accuracy": 0.743003,
   "weighted_val_loss": 0.679367,
-  "per_client": {
-    "0": {
-      "client_id": 0,
-      "is_noisy": true,
+  "shards": {
+    "shard_0": {
+      "shard_id": 0,
+      "client_training_counterpart": "Client 0",
+      "counterpart_training_noise": "40% symmetric noise",
+      "validation_labels": "clean (unmodified official MedMNIST)",
       "accuracy": 0.727136,
       "loss": 0.697804,
       "macro_f1": 0.706879,
       "total_samples": 2001
     },
-    "1": {
-      "client_id": 1,
-      "is_noisy": false,
+    "shard_1": {
+      "shard_id": 1,
+      "client_training_counterpart": "Client 1",
+      "counterpart_training_noise": "0% (clean)",
+      "validation_labels": "clean (unmodified official MedMNIST)",
       "accuracy": 0.753123,
       "loss": 0.674237,
       "macro_f1": 0.727404,
       "total_samples": 2001
     },
-    "2": {
-      "client_id": 2,
-      "is_noisy": false,
+    "shard_2": {
+      "shard_id": 2,
+      "client_training_counterpart": "Client 2",
+      "counterpart_training_noise": "0% (clean)",
+      "validation_labels": "clean (unmodified official MedMNIST)",
       "accuracy": 0.747626,
       "loss": 0.667738,
       "macro_f1": 0.728983,
       "total_samples": 2001
     },
-    "3": {
-      "client_id": 3,
-      "is_noisy": false,
+    "shard_3": {
+      "shard_id": 3,
+      "client_training_counterpart": "Client 3",
+      "counterpart_training_noise": "0% (clean)",
+      "validation_labels": "clean (unmodified official MedMNIST)",
       "accuracy": 0.736132,
       "loss": 0.703154,
       "macro_f1": 0.711708,
       "total_samples": 2001
     },
-    "4": {
-      "client_id": 4,
-      "is_noisy": false,
+    "shard_4": {
+      "shard_id": 4,
+      "client_training_counterpart": "Client 4",
+      "counterpart_training_noise": "0% (clean)",
+      "validation_labels": "clean (unmodified official MedMNIST)",
       "accuracy": 0.751,
       "loss": 0.65389,
       "macro_f1": 0.729795,

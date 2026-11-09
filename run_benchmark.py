@@ -3,6 +3,8 @@ Benchmark Execution Entry Point.
 Coordinates end-to-end execution of FedAvg and FedProx experiments on PathMNIST.
 """
 
+import utils.transport
+import utils.session
 import os
 import sys
 import argparse
