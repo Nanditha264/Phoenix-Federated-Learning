@@ -188,6 +188,20 @@ def import_run(run_info: dict, project: str, entity: str = None, offline: bool =
     run.summary["test/macro_f1"] = te.get("macro_f1")
     run.summary["test/class_8_adenocarcinoma_acc"] = te.get("per_class_accuracy", {}).get("8")
 
+    # Post-hoc client validation metrics (evaluated on best checkpoint)
+    post_hoc_file = run_dir / "post_hoc_client_val.json"
+    if post_hoc_file.exists():
+        with open(post_hoc_file, "r", encoding="utf-8") as f:
+            ph_data = json.load(f)
+        run.summary["post_hoc_val/mean_acc"] = ph_data.get("mean_val_accuracy")
+        run.summary["post_hoc_val/mean_loss"] = ph_data.get("mean_val_loss")
+        run.summary["post_hoc_val/weighted_acc"] = ph_data.get("weighted_val_accuracy")
+        run.summary["post_hoc_val/weighted_loss"] = ph_data.get("weighted_val_loss")
+        for cid_str, c_vals in ph_data.get("per_client", {}).items():
+            run.summary[f"post_hoc_val/client_{cid_str}_acc"] = c_vals.get("accuracy")
+            run.summary[f"post_hoc_val/client_{cid_str}_loss"] = c_vals.get("loss")
+            run.summary[f"post_hoc_val/client_{cid_str}_macro_f1"] = c_vals.get("macro_f1")
+
     run_url = getattr(run, "url", "offline_run")
     run.finish()
     print(f"  - Finished run: {run_url}")
@@ -197,7 +211,7 @@ def import_run(run_info: dict, project: str, entity: str = None, offline: bool =
 def main():
     parser = argparse.ArgumentParser(description="Post-Hoc W&B Importer for PathMNIST FL Benchmark")
     parser.add_argument("--project", default="fedavg-vs-fedprox-pathmnist", help="W&B Project Name")
-    parser.add_argument("--entity", default=None, help="W&B Entity / Team Name")
+    parser.add_argument("--entity", default="c3861282-pes-college", help="W&B Entity / Team Name")
     parser.add_argument("--offline", action="store_true", help="Log runs locally in W&B offline directory")
     args = parser.parse_args()
 

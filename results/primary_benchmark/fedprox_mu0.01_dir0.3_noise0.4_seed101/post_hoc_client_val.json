@@ -1,0 +1,52 @@
+{
+  "evaluation_type": "post_hoc_best_checkpoint_client_validation",
+  "model_checkpoint": "best_checkpoint.pt",
+  "seed": 101,
+  "algorithm": "fedprox",
+  "mean_val_accuracy": 0.743003,
+  "mean_val_loss": 0.679365,
+  "weighted_val_accuracy": 0.743003,
+  "weighted_val_loss": 0.679367,
+  "per_client": {
+    "0": {
+      "client_id": 0,
+      "is_noisy": true,
+      "accuracy": 0.727136,
+      "loss": 0.697804,
+      "macro_f1": 0.706879,
+      "total_samples": 2001
+    },
+    "1": {
+      "client_id": 1,
+      "is_noisy": false,
+      "accuracy": 0.753123,
+      "loss": 0.674237,
+      "macro_f1": 0.727404,
+      "total_samples": 2001
+    },
+    "2": {
+      "client_id": 2,
+      "is_noisy": false,
+      "accuracy": 0.747626,
+      "loss": 0.667738,
+      "macro_f1": 0.728983,
+      "total_samples": 2001
+    },
+    "3": {
+      "client_id": 3,
+      "is_noisy": false,
+      "accuracy": 0.736132,
+      "loss": 0.703154,
+      "macro_f1": 0.711708,
+      "total_samples": 2001
+    },
+    "4": {
+      "client_id": 4,
+      "is_noisy": false,
+      "accuracy": 0.751,
+      "loss": 0.65389,
+      "macro_f1": 0.729795,
+      "total_samples": 2000
+    }
+  }
+}

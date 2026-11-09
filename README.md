@@ -281,15 +281,37 @@ python scripts/generate_reactive_optimizers_summary_pdf.py
 
 ## 17. Weights & Biases (W&B) Experiment Tracking
 
-The repository provides local JSONL logging by default (`tracking/local_logger.py`). For optional cloud experiment tracking, a dedicated post-hoc importer is included:
-```bash
-# Log in to Weights & Biases
-wandb login
+All six primary benchmark experiments are publicly tracked on Weights & Biases:
 
-# Import completed benchmark telemetry to project
-python scripts/import_to_wandb.py --project fedavg-vs-fedprox-pathmnist
+- **Public W&B Project:** [fedavg-vs-fedprox-pathmnist](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/workspace)
+- **W&B Entity:** `c3861282-pes-college`
+- **Visibility:** **Public (Verified via unauthenticated HTTP probe)**
+
+### Published Experiment Runs
+
+| Algorithm | Random Seed | Run Name | Deterministic Run ID | Public Run Link |
+| :--- | :---: | :--- | :--- | :---: |
+| **FedAvg** | 42 | `fedavg_dir0.3_noise0.4_seed42` | `pathmnist_fedavg_dir0.3_noise0.4_seed42` | [View Run](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/runs/pathmnist_fedavg_dir0.3_noise0.4_seed42) |
+| **FedProx** ($\mu=0.01$) | 42 | `fedprox_mu0.01_dir0.3_noise0.4_seed42` | `pathmnist_fedprox_mu0.01_dir0.3_noise0.4_seed42` | [View Run](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/runs/pathmnist_fedprox_mu0.01_dir0.3_noise0.4_seed42) |
+| **FedAvg** | 101 | `fedavg_dir0.3_noise0.4_seed101` | `pathmnist_fedavg_dir0.3_noise0.4_seed101` | [View Run](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/runs/pathmnist_fedavg_dir0.3_noise0.4_seed101) |
+| **FedProx** ($\mu=0.01$) | 101 | `fedprox_mu0.01_dir0.3_noise0.4_seed101` | `pathmnist_fedprox_mu0.01_dir0.3_noise0.4_seed101` | [View Run](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/runs/pathmnist_fedprox_mu0.01_dir0.3_noise0.4_seed101) |
+| **FedAvg** | 2024 | `fedavg_dir0.3_noise0.4_seed2024` | `pathmnist_fedavg_dir0.3_noise0.4_seed2024` | [View Run](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/runs/pathmnist_fedavg_dir0.3_noise0.4_seed2024) |
+| **FedProx** ($\mu=0.01$) | 2024 | `fedprox_mu0.01_dir0.3_noise0.4_seed2024` | `pathmnist_fedprox_mu0.01_dir0.3_noise0.4_seed2024` | [View Run](https://forge.coreweave.com/wandb/c3861282-pes-college/fedavg-vs-fedprox-pathmnist/runs/pathmnist_fedprox_mu0.01_dir0.3_noise0.4_seed2024) |
+
+### Tracked Telemetry & Metric Completeness
+
+Each run records complete 5-round histories and comprehensive summary evaluations:
+- **Global Optimization:** Training loss (`train/avg_loss`), global validation accuracy (`eval/val_acc`), and loss (`eval/val_loss`) per round.
+- **Update Geometry:** Global update norm (`geometry/global_update_norm`), individual client update norms (`geometry/client_update_norm/client_{0..4}`), and directional cosine alignment with the consensus vector (`geometry/alignment_with_global/client_{0..4}`).
+- **Test Set Evaluation:** Full evaluation on the 7,180 PathMNIST test samples (`test/accuracy`, `test/loss`, `test/macro_f1`, and per-class accuracies for Classes 0–8).
+- **Post-Hoc Client Validation:** Historical training runs logged client validation in sample-weighted aggregate form (`eval/client_mean_val_acc`, `eval/client_mean_val_loss`). To provide granular per-client metrics without modifying original telemetry, each run's retained `best_checkpoint.pt` was evaluated post-hoc across the 5 canonical client validation subsets and registered under `post_hoc_val/client_{0..4}_acc` and `post_hoc_val/client_{0..4}_loss`.
+
+### Re-synchronizing Telemetry
+
+The repository provides local JSONL logging by default (`src/tracking/local_logger.py`). Telemetry can be re-imported idempotently using:
+```bash
+python scripts/import_to_wandb.py --project fedavg-vs-fedprox-pathmnist --entity c3861282-pes-college
 ```
-*Note: Telemetry import is post-hoc and does not modify local experiment records.*
 
 ---
 

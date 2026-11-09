@@ -1,0 +1,188 @@
+{
+  "fedavg_dir0.3_noise0.4_seed42": {
+    "per_client": {
+      "0": {
+        "samples": 2001,
+        "accuracy": 0.758121,
+        "loss": 0.669435
+      },
+      "1": {
+        "samples": 2001,
+        "accuracy": 0.755622,
+        "loss": 0.671733
+      },
+      "2": {
+        "samples": 2001,
+        "accuracy": 0.761619,
+        "loss": 0.658394
+      },
+      "3": {
+        "samples": 2001,
+        "accuracy": 0.754123,
+        "loss": 0.685408
+      },
+      "4": {
+        "samples": 2000,
+        "accuracy": 0.778,
+        "loss": 0.644392
+      }
+    },
+    "weighted_accuracy": 0.761495,
+    "weighted_loss": 0.665875
+  },
+  "fedavg_dir0.3_noise0.4_seed101": {
+    "per_client": {
+      "0": {
+        "samples": 2001,
+        "accuracy": 0.785107,
+        "loss": 0.592274
+      },
+      "1": {
+        "samples": 2001,
+        "accuracy": 0.792104,
+        "loss": 0.57504
+      },
+      "2": {
+        "samples": 2001,
+        "accuracy": 0.791104,
+        "loss": 0.57923
+      },
+      "3": {
+        "samples": 2001,
+        "accuracy": 0.786607,
+        "loss": 0.604771
+      },
+      "4": {
+        "samples": 2000,
+        "accuracy": 0.794,
+        "loss": 0.559797
+      }
+    },
+    "weighted_accuracy": 0.789784,
+    "weighted_loss": 0.582225
+  },
+  "fedavg_dir0.3_noise0.4_seed2024": {
+    "per_client": {
+      "0": {
+        "samples": 2001,
+        "accuracy": 0.717641,
+        "loss": 0.790024
+      },
+      "1": {
+        "samples": 2001,
+        "accuracy": 0.721139,
+        "loss": 0.746584
+      },
+      "2": {
+        "samples": 2001,
+        "accuracy": 0.732134,
+        "loss": 0.747873
+      },
+      "3": {
+        "samples": 2001,
+        "accuracy": 0.735132,
+        "loss": 0.740372
+      },
+      "4": {
+        "samples": 2000,
+        "accuracy": 0.7355,
+        "loss": 0.764657
+      }
+    },
+    "weighted_accuracy": 0.728308,
+    "weighted_loss": 0.757901
+  },
+  "fedprox_mu0.01_dir0.3_noise0.4_seed42": {
+    "per_client": {
+      "0": {
+        "samples": 2001,
+        "accuracy": 0.742629,
+        "loss": 0.705757
+      },
+      "1": {
+        "samples": 2001,
+        "accuracy": 0.745627,
+        "loss": 0.700957
+      },
+      "2": {
+        "samples": 2001,
+        "accuracy": 0.748126,
+        "loss": 0.684014
+      },
+      "3": {
+        "samples": 2001,
+        "accuracy": 0.756122,
+        "loss": 0.703748
+      },
+      "4": {
+        "samples": 2000,
+        "accuracy": 0.76,
+        "loss": 0.683635
+      }
+    },
+    "weighted_accuracy": 0.7505,
+    "weighted_loss": 0.695623
+  },
+  "fedprox_mu0.01_dir0.3_noise0.4_seed101": {
+    "per_client": {
+      "0": {
+        "samples": 2001,
+        "accuracy": 0.727136,
+        "loss": 0.697804
+      },
+      "1": {
+        "samples": 2001,
+        "accuracy": 0.753123,
+        "loss": 0.674237
+      },
+      "2": {
+        "samples": 2001,
+        "accuracy": 0.747626,
+        "loss": 0.667738
+      },
+      "3": {
+        "samples": 2001,
+        "accuracy": 0.736132,
+        "loss": 0.703154
+      },
+      "4": {
+        "samples": 2000,
+        "accuracy": 0.751,
+        "loss": 0.65389
+      }
+    },
+    "weighted_accuracy": 0.743003,
+    "weighted_loss": 0.679367
+  },
+  "fedprox_mu0.01_dir0.3_noise0.4_seed2024": {
+    "per_client": {
+      "0": {
+        "samples": 2001,
+        "accuracy": 0.688656,
+        "loss": 0.912606
+      },
+      "1": {
+        "samples": 2001,
+        "accuracy": 0.697651,
+        "loss": 0.871385
+      },
+      "2": {
+        "samples": 2001,
+        "accuracy": 0.70015,
+        "loss": 0.870915
+      },
+      "3": {
+        "samples": 2001,
+        "accuracy": 0.696652,
+        "loss": 0.864316
+      },
+      "4": {
+        "samples": 2000,
+        "accuracy": 0.699,
+        "loss": 0.886231
+      }
+    },
+    "weighted_accuracy": 0.696422,
+    "weighted_loss": 0.88109
+  }
+}
