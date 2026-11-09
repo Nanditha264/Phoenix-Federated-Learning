@@ -1,0 +1,7 @@
+# FedProx Specific Configuration Override
+experiment:
+  run_name: "fedprox_mu0.01_dir0.3_noise0.4_seed42"
+
+federated:
+  algorithm: "fedprox"
+  fedprox_mu: 0.01

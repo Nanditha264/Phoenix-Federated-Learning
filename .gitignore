@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Caches & Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.matplotlib/
+
+# Packaging & Environments
+dist/
+build/
+*.egg-info/
+.venv/
+env/
+fl_env/
+
+# Logging & External Services
+wandb/
+results/*/wandb/
+results/*/*/wandb/
+*.tmp*
+*.tmp_*
+
+# Credentials & Sensitive Files
+.env
+.env.*
+_netrc
+*.key
+*.pem
+
+# Submission archives
+*.zip
+
+# Historical pilots & diagnostic runs (preserved locally, excluded from git)
+results/fedavg_dir0.3_noise0.4_seed42/
+results/fedprox_dir0.3_noise0.4_seed42/
+results/fedprox_mu0.01_dir0.3_noise0.4_seed42/
+results/test_wandb/
+results/primary_benchmark/diagnostic_attempt1_hang_logs/
+phase5_recovery/
+data/cache/
+dataset_cache/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

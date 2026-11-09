@@ -1,0 +1,65 @@
+# Base Configuration for Federated Learning Benchmark
+# Research: FedAvg vs FedProx on PathMNIST with Non-IID Dirichlet and 40% Client 0 Label Noise
+
+experiment:
+  name: "pathmnist_fl_benchmark"
+  project: "fedavg-vs-fedprox-pathmnist"
+  seed: 42
+  deterministic: false
+
+dataset:
+  name: "pathmnist"
+  cache_dir: "D:/Reasearch/dataset_cache"
+  num_classes: 9
+  in_channels: 3
+  image_size: 28
+  train_samples: 89996
+  val_samples: 10004
+  test_samples: 7180
+
+partition:
+  num_clients: 5
+  dirichlet_alpha: 0.3
+  seed: 42
+  min_samples_per_client: 50
+
+noise:
+  noisy_client_id: 0
+  noise_rate: 0.40
+  noise_type: "symmetric"
+  seed: 42
+
+model:
+  name: "FedAvgCNN"
+  in_channels: 3
+  num_classes: 9
+  fc_hidden: 1024
+
+federated:
+  rounds: 50
+  client_sample_fraction: 1.0  # All 5 clients participate every round
+  batch_size: 32
+  learning_rate: 0.01
+  momentum: 0.9
+  weight_decay: 0.0001
+  local_epochs: 2
+  algorithm: "fedavg"          # overridden in algorithm configs
+
+compute:
+  device: "cpu"
+  num_threads: 4
+  num_interop_threads: 1
+  pin_memory: false
+  num_workers: 0
+
+safety:
+  warning_threshold_mb: 800.0       # 800 MB
+  client_pause_threshold_mb: 550.0  # 550 MB
+  emergency_stop_threshold_mb: 350.0 # 350 MB hard emergency floor
+
+tracking:
+  use_wandb: true
+  wandb_mode: "disabled"            # disabled during training to prevent socket deadlocks on Windows
+  log_local_jsonl: true
+  output_dir: "D:/Reasearch/fl_benchmark/results"
+  save_checkpoints: true

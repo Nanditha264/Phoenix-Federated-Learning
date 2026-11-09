@@ -1,0 +1,15 @@
+# Pinned dependencies for CPU-based PathMNIST Federated Learning Benchmark
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0+cpu
+torchvision==0.29.2+cpu
+medmnist==3.0.2
+scipy==1.17.1
+scikit-learn==1.9.1
+pillow==13.0.0
+pandas==3.1.1
+matplotlib==3.11.2
+wandb==0.31.0
+psutil==7.2.2
+pytest==9.2.0
+tqdm==4.70.1
+pyyaml==6.0.3

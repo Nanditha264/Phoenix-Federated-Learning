@@ -1,0 +1,14 @@
+{
+  "fedavg": {
+    "test_accuracy_mean": 0.7724699999999999,
+    "test_accuracy_std": 0.0324863964247601,
+    "test_loss_mean": 0.7244626666666667,
+    "test_macro_f1_mean": 0.7118466666666666
+  },
+  "fedprox": {
+    "test_accuracy_mean": 0.747075,
+    "test_accuracy_std": 0.03788570528136788,
+    "test_loss_mean": 0.8078063333333333,
+    "test_macro_f1_mean": 0.6846303333333333
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "fig1_val_accuracy_vs_rounds": "metrics.jsonl: eval/val_acc across Rounds 1-5",
+  "fig2_val_loss_vs_rounds": "metrics.jsonl: eval/val_loss across Rounds 1-5",
+  "fig3_update_norm_shrinkage": "metrics.jsonl: geometry/global_update_norm & geometry/client_update_norms at Round 5",
+  "fig4_update_cosine_alignment": "metrics.jsonl: geometry/alignment_with_global across Rounds 1-5",
+  "fig5_pairwise_cosine_heatmaps": "metrics.jsonl: geometry/pairwise_cosine_matrix at Round 5 averaged across 3 seeds",
+  "fig6_per_class_test_accuracy": "summary.json: test_evaluation.per_class_accuracy averaged across 3 seeds"
+}

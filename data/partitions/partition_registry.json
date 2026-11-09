@@ -1,0 +1,224 @@
+{
+  "42": {
+    "seed": 42,
+    "alpha": 0.3,
+    "num_clients": 5,
+    "total_samples": 89996,
+    "client_sample_counts": [
+      10547,
+      20614,
+      17308,
+      21484,
+      20043
+    ],
+    "client_0_corrupted_samples": 4219,
+    "client_0_actual_noise_pct": 40.0019,
+    "partition_file": "D:\\Reasearch\\fl_benchmark\\data\\partitions\\partition_dir0.3_clients5_seed42.npz",
+    "sha256": "5d45b6280dd3eee7b5b7cd3b73c2cdecfee65959a963e100dc3fa701c23d8c76",
+    "class_distribution_matrix": [
+      [
+        2,
+        0,
+        489,
+        9,
+        4389,
+        0,
+        662,
+        127,
+        4869
+      ],
+      [
+        916,
+        444,
+        2096,
+        8506,
+        1239,
+        681,
+        2809,
+        3922,
+        1
+      ],
+      [
+        5,
+        3521,
+        7216,
+        1715,
+        90,
+        2880,
+        310,
+        22,
+        1549
+      ],
+      [
+        5,
+        362,
+        268,
+        153,
+        2263,
+        8501,
+        93,
+        5295,
+        4544
+      ],
+      [
+        8438,
+        5182,
+        291,
+        18,
+        25,
+        120,
+        4012,
+        35,
+        1922
+      ]
+    ]
+  },
+  "101": {
+    "seed": 101,
+    "alpha": 0.3,
+    "num_clients": 5,
+    "total_samples": 89996,
+    "client_sample_counts": [
+      13504,
+      12707,
+      18733,
+      14739,
+      30313
+    ],
+    "client_0_corrupted_samples": 5402,
+    "client_0_actual_noise_pct": 40.003,
+    "partition_file": "D:\\Reasearch\\fl_benchmark\\data\\partitions\\partition_dir0.3_clients5_seed101.npz",
+    "sha256": "1c7e5f80f36cb6e6aa621b75dc038a287077b12b2894514127340a39e1537fa6",
+    "class_distribution_matrix": [
+      [
+        761,
+        2360,
+        291,
+        2343,
+        2,
+        686,
+        0,
+        2220,
+        4841
+      ],
+      [
+        365,
+        986,
+        3,
+        1941,
+        2769,
+        1633,
+        4009,
+        152,
+        849
+      ],
+      [
+        0,
+        6148,
+        2154,
+        5167,
+        200,
+        4259,
+        2,
+        8,
+        795
+      ],
+      [
+        8083,
+        0,
+        87,
+        57,
+        171,
+        797,
+        128,
+        0,
+        5416
+      ],
+      [
+        157,
+        15,
+        7825,
+        893,
+        4864,
+        4807,
+        3747,
+        7021,
+        984
+      ]
+    ]
+  },
+  "2024": {
+    "seed": 2024,
+    "alpha": 0.3,
+    "num_clients": 5,
+    "total_samples": 89996,
+    "client_sample_counts": [
+      20836,
+      3771,
+      15415,
+      19099,
+      30875
+    ],
+    "client_0_corrupted_samples": 8334,
+    "client_0_actual_noise_pct": 39.9981,
+    "partition_file": "D:\\Reasearch\\fl_benchmark\\data\\partitions\\partition_dir0.3_clients5_seed2024.npz",
+    "sha256": "f6b32b01ba717c8437f133eaeb6dc1bd8929bfd4cd5c1f06083bb8af6bec26a6",
+    "class_distribution_matrix": [
+      [
+        1513,
+        45,
+        482,
+        1584,
+        3570,
+        816,
+        7263,
+        5549,
+        14
+      ],
+      [
+        200,
+        0,
+        48,
+        1180,
+        0,
+        885,
+        9,
+        1429,
+        20
+      ],
+      [
+        1518,
+        1,
+        7228,
+        2528,
+        85,
+        1521,
+        463,
+        1951,
+        120
+      ],
+      [
+        4,
+        963,
+        1867,
+        0,
+        4041,
+        3,
+        117,
+        99,
+        12005
+      ],
+      [
+        6131,
+        8500,
+        735,
+        5109,
+        310,
+        8957,
+        34,
+        373,
+        726
+      ]
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+# FedAvg Specific Configuration Override
+experiment:
+  run_name: "fedavg_dir0.3_noise0.4_seed42"
+
+federated:
+  algorithm: "fedavg"

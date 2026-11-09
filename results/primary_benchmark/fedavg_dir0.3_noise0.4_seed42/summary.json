@@ -1,0 +1,87 @@
+{
+  "best_val_acc": 0.761495,
+  "rounds_completed": 5,
+  "final_metrics": {
+    "round": 5,
+    "train/avg_loss": 0.644499,
+    "eval/val_loss": 0.665875,
+    "eval/val_acc": 0.761495,
+    "eval/val_macro_f1": 0.75135,
+    "eval/best_val_acc": 0.761495,
+    "eval/client_mean_val_acc": 0.761497,
+    "eval/client_mean_val_loss": 0.665872,
+    "geometry/global_update_norm": 2.385504,
+    "geometry/client_update_norms": [
+      3.206527,
+      4.734034,
+      4.175991,
+      4.755612,
+      4.205653
+    ],
+    "geometry/alignment_with_global": [
+      0.133957,
+      0.658335,
+      0.557045,
+      0.632804,
+      0.486445
+    ],
+    "geometry/pairwise_cosine_matrix": [
+      [
+        1.0,
+        -0.022253,
+        -0.007788,
+        0.00065,
+        -0.028396
+      ],
+      [
+        -0.022253,
+        1.0,
+        0.215997,
+        0.177743,
+        0.127232
+      ],
+      [
+        -0.007788,
+        0.215997,
+        1.0,
+        0.192965,
+        0.080418
+      ],
+      [
+        0.00065,
+        0.177743,
+        0.192965,
+        1.0,
+        0.028064
+      ],
+      [
+        -0.028396,
+        0.127232,
+        0.080418,
+        0.028064,
+        1.0
+      ]
+    ],
+    "system/process_rss_mb": 572.86,
+    "system/ram_available_mb": 1597.26,
+    "system/cpu_percent": 30.4,
+    "time/round_seconds": 63.92
+  },
+  "test_evaluation": {
+    "loss": 0.759462,
+    "accuracy": 0.775627,
+    "macro_f1": 0.712974,
+    "per_class_accuracy": {
+      "0": 0.9304932735426009,
+      "1": 1.0,
+      "2": 0.5103244837758112,
+      "3": 0.9258675078864353,
+      "4": 0.6231884057971014,
+      "5": 0.6334459459459459,
+      "6": 0.7921727395411606,
+      "7": 0.3016627078384798,
+      "8": 0.797242497972425
+    },
+    "total_samples": 7180
+  }
+}
