@@ -84,7 +84,7 @@ a514489 docs: add final publication release report
 ```
 
 ### 2.3 Tracked File Inventory & Structure
-- **Total Tracked Files:** 164 files
+- **Total Tracked Files:** 165 files
 - **Total Tracked Repository Size:** 117.03 MB
 - **Large File Compliance:** 0 files exceed GitHub's 50 MB / 100 MB limits (largest files are model checkpoints at 2.23 MB each).
 - **Directory Breakdown:**
@@ -93,7 +93,7 @@ a514489 docs: add final publication release report
   - `data/`: 14 files (PathMNIST canonical partition generators, splits, and verified MD5 hashes)
   - `evaluation/`: 3 files (evaluator, per-class metrics, confusion matrices)
   - `federated/`: 6 files (FedAvg and FedProx server and client implementations)
-  - `figures/`: 13 files (6 publication-quality figures in vector PDF and high-res PNG formats, plus FIGURE_DATA_MAPPING.md)
+  - `figures/`: 14 files (6 publication-quality figures in vector PDF and high-res PNG formats, figure_source_data_mapping.json, and FIGURE_DATA_MAPPING.md)
   - `metrics/`: 4 files (update geometry, norm shrinkage, cosine similarity calculators)
   - `models/`: 3 files (FedAvgCNN architecture, initialization, forward pass)
   - `results/`: 65 files (6 primary benchmark runs, per-round JSONL telemetry, summary.json, checkpoints)
