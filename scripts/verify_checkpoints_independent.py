@@ -14,10 +14,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT.parent))
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from fl_benchmark.data.download import ensure_pathmnist_downloaded
-from fl_benchmark.data.pathmnist_dataset import PathMNISTDataset
-from fl_benchmark.models.cnn import FedAvgCNN
-from fl_benchmark.evaluation.evaluator import GlobalEvaluator
+from src.data.download import ensure_pathmnist_downloaded
+from src.data.pathmnist_dataset import PathMNISTDataset
+from src.models.cnn import FedAvgCNN
+from src.evaluation.evaluator import GlobalEvaluator
 
 def main():
     device = torch.device("cpu")

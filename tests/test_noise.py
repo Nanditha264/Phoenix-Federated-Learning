@@ -4,7 +4,7 @@ Unit Tests for Controlled Symmetric Label Noise.
 
 import numpy as np
 import pytest
-from fl_benchmark.data.noise import inject_symmetric_noise
+from src.data.noise import inject_symmetric_noise
 
 
 def test_symmetric_noise_exact_count_and_rate():

@@ -11,7 +11,7 @@ import json
 import numpy as np
 from pathlib import Path
 
-BENCHMARK_DIR = Path(r"D:\Reasearch\fl_benchmark\results\primary_benchmark")
+BENCHMARK_DIR = Path(__file__).resolve().parent.parent / "results" / "primary_benchmark"
 
 SEEDS = [42, 101, 2024]
 ALGORITHMS = ["fedavg", "fedprox"]

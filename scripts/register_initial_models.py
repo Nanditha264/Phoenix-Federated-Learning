@@ -14,8 +14,8 @@ for p in [str(PROJECT_ROOT), str(WORKSPACE_ROOT)]:
 
 import hashlib
 import torch
-from fl_benchmark.utils.seed import set_seed
-from fl_benchmark.models.model_factory import create_model
+from src.utils.seed import set_seed
+from src.models.model_factory import create_model
 
 INIT_DIR = Path("D:/Reasearch/fl_benchmark/data/initial_models")
 INIT_DIR.mkdir(parents=True, exist_ok=True)

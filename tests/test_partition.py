@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from fl_benchmark.data.partition import dirichlet_partition, compute_partition_stats
-from fl_benchmark.data.pathmnist_dataset import load_pathmnist_raw
+from src.data.partition import dirichlet_partition, compute_partition_stats
+from src.data.pathmnist_dataset import load_pathmnist_raw
 
 
 def test_synthetic_dirichlet_partition():

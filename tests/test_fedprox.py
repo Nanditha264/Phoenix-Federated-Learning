@@ -8,9 +8,9 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset
 import pytest
 
-from fl_benchmark.models.cnn import FedAvgCNN
-from fl_benchmark.federated.fedavg import FedAvgClient
-from fl_benchmark.federated.fedprox import FedProxClient
+from src.models.cnn import FedAvgCNN
+from src.federated.fedavg import FedAvgClient
+from src.federated.fedprox import FedProxClient
 
 
 def test_fedprox_mu_zero_equivalence():

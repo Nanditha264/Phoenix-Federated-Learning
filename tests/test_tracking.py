@@ -7,8 +7,8 @@ from pathlib import Path
 import tempfile
 import pytest
 
-from fl_benchmark.tracking.local_logger import LocalLogger
-from fl_benchmark.tracking.wandb_logger import WandbLogger
+from src.tracking.local_logger import LocalLogger
+from src.tracking.wandb_logger import WandbLogger
 
 
 def test_local_logger_jsonl_and_summary():

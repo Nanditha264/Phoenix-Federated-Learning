@@ -1,225 +1,417 @@
 # Phoenix Federated Learning: FedAvg vs FedProx on PathMNIST
 
-A modular, scientifically rigorous, CPU-optimized federated learning research framework comparing **Federated Averaging (FedAvg)** and **Federated Proximal (FedProx, $\mu = 0.01$)** on the MedMNIST PathMNIST biomedical image benchmark under non-IID Dirichlet distribution ($\alpha = 0.3$) and controlled symmetric label noise ($40\%$ on Client 0).
+A modular, reproducible, CPU-optimized federated learning research framework evaluating **Federated Averaging (FedAvg)** and **Federated Proximal (FedProx, $\mu = 0.01$)** on the MedMNIST **PathMNIST** biomedical image dataset under non-IID class skew ($\text{Dirichlet } \alpha = 0.3$) and controlled client label corruption ($40\%$ symmetric label noise on Client 0).
 
 ---
 
-## 1. Project Overview & Research Motivation
+## 1. Project Overview & Research Description
 
-In clinical histopathology, whole-slide tissue images collected across hospital pathology departments exhibit severe statistical heterogeneity (non-IID data) stemming from local patient demographics, tissue preparation protocols, and scanner color profiles. Furthermore, manual histology labeling introduces annotation error (label noise).
+In federated medical image classification, decentralized hospital nodes often exhibit severe statistical heterogeneity (non-IID data) and annotation inconsistencies (label noise) arising from varied clinical protocols and human diagnostic subjectivity. Standard **FedAvg** (McMahan et al., 2017) aggregates local empirical risk minimization updates, but can suffer from **client drift**, in which local models diverge toward local empirical optima. **FedProx** (Li et al., 2020) adds an explicit proximal regularizer $\frac{\mu}{2} \|w - w^t\|_2^2$ to the local objective to limit divergence from the global consensus.
 
-Standard Federated Averaging (**FedAvg**, McMahan et al., 2017) aggregates local empirical risk minimization updates, but is vulnerable to **client drift**, where local models diverge toward local empirical optima. Federated Proximal (**FedProx**, Li et al., 2020) introduces an explicit proximal regularizer $\frac{\mu}{2} \|w - w^t\|_2^2$ to stabilize convergence by penalizing local parameter displacement from the global consensus.
-
-### Research Questions
-1. **RQ1 (Convergence & Generalization):** Does proximal regularization ($\mu = 0.01$) improve global validation and test accuracy compared to FedAvg under severe non-IID class skew ($\text{Dirichlet } \alpha = 0.3$) within a 5-round computational budget?
-2. **RQ2 (Label Noise Resilience):** Does FedProx dampen destructive parameter updates originating from a corrupted client ($40\%$ symmetric label noise on Client 0), protecting the global model from noise memorization?
-3. **RQ3 (Update Geometry & Proximal Shrinkage):** How does proximal regularization alter the magnitude of client parameter updates ($\|\Delta w_k\|$) and their directional cosine alignment with the global consensus update?
+This benchmark provides an empirical, paired comparison across three independent random seeds (42, 101, 2024), measuring test classification accuracy, loss, macro-F1, per-class performance, model update norms, and directional cosine alignment.
 
 ---
 
-## 2. Key Contributions
+## 2. Research Objective & Motivation
 
-- **Zero-Modification Upstream Purity:** Reference upstream repository `PFLlib-upstream` is preserved 100% untouched (`git status` clean at commit `0169ba7`). All modular implementations are isolated inside `	ext
-fl_benchmark/
-├── configs/                     # Centralized YAML configurations
-│   ├── base.yaml                # Calibrated baseline & hardware parameters
-│   ├── fedavg.yaml              # FedAvg algorithm specification
-│   └── fedprox.yaml             # FedProx algorithm specification (mu=0.01)
-├── data/                        # PathMNIST loading, partitioning & noise
-│   ├── download.py              # MD5 verification (a8b06965200029087d5bd730944a56c1)
-│   ├── preprocessing.py         # On-the-fly uint8 -> float32 [-1, 1] normalization
-│   ├── pathmnist_dataset.py     # In-memory Dataset using zero-copy indices
-│   ├── partition.py             # Class-wise Dirichlet non-IID partitioning
-│   ├── noise.py                 # Controlled 40% symmetric noise injection
-│   ├── validation.py            # Dataset split & partition auditor
-│   ├── partitions/              # Canonical serialized NPZ partitions (Seeds 42, 101, 2024)
-│   └── initial_models/          # Bit-level canonical initial model weights (.pt)
-├── models/                      # FedAvgCNN architecture (583,113 parameters)
-├── federated/                   # Sequential federated client/server orchestrator
-│   ├── client.py                # Base client interface
-│   ├── server.py                # Server coordinating sequential training & geometry
-│   ├── aggregation.py           # Sample-weighted model parameter aggregation
-│   ├── fedavg.py                # Standard FedAvg client implementation
-│   └── fedprox.py               # FedProx client with explicit proximal regularizer
-├── metrics/                     # Loss, accuracy, macro-F1, update geometry engine
-├── tracking/                    # Local JSONL logger & safe non-blocking W&B adapter
-├── utils/                       # Seeds, device threads, atomic checkpoints, memory monitor
-├── tests/                       # Complete 30-test automated suite (pytest)
-├── scripts/                     # Master matrix runner, figure & PDF generators
-│   ├── run_primary_matrix.py    # Master benchmark matrix with recovery guard
-│   ├── generate_publication_figures.py # 300 DPI PNG & vector PDF figure generator
-│   ├── generate_research_summary_pdf.py # Formal 6-page research report compiler
-│   └── import_to_wandb.py       # Post-hoc W&B telemetry importer
-├── figures/                     # Generated publication-quality figures
-├── results/
-│   ├── primary_benchmark/       # Isolated 6-run benchmark outputs & metrics
-│   └── README.md                # Results taxonomy and provenance catalog
-├── RESEARCH_SUMMARY.pdf         # Publication-grade multi-page research summary PDF
-├── REPRODUCIBILITY.md           # Step-by-step reproduction instructions
-├── requirements.txt             # Pinned Python dependencies
-└── pyproject.toml               # Package configuration
-`.
-- **Bit-Level Paired Initializations:** Initial models for Seeds 42, 101, and 2024 are cryptographically anchored (SHA-256) to ensure bit-level identical starting points for paired FedAvg and FedProx comparisons.
-- **Continuous Update Geometry Engine:** Measures client displacement norms $\|\Delta w_k\|_2$, sample-weighted global update norm $\|\Delta w_{\text{global}}\|_2$, $5 \times 5$ pairwise client cosine similarity matrices, and directional cosine alignment with the global update trajectory.
-- **Multi-Tier Hardware Safety Tripwires:** Configured for local Windows 11 execution on an Intel Core i5-1240P with 8 GB physical RAM, enforcing sequential client execution (0 DataLoader workers, 4 intra-op threads) and active sleep prevention via Win32 `SetThreadExecutionState`.
-- **Idempotent Six-Factor Recovery Guard:** Built into `run_primary_matrix.py` to verify completion and resume without re-running completed runs.
+1. **Convergence & Generalization:** Does proximal regularization ($\mu = 0.01$) improve global generalization accuracy compared to FedAvg under severe Dirichlet class skew ($\alpha = 0.3$) within a 5-round computational budget?
+2. **Label Noise Regularization:** Does FedProx dampen destructive gradient updates originating from a corrupted node ($40\%$ label noise on Client 0), mitigating noise propagation into the global model?
+3. **Parameter Geometry:** How does the proximal term affect parameter update norms ($\|\Delta w_k\|$) and directional cosine alignment ($\cos(\Delta w_k, \Delta w_{\text{global}})$)?
 
 ---
 
-## 3. Comparative Research Results
+## 3. Experimental Setup
 
-Across three independent random seeds (42, 101, 2024), partitioned under Dirichlet $\alpha = 0.3$ with 40% label noise on Client 0, both algorithms were trained for 5 communication rounds (10 local epochs per client over all 89,996 training samples) and evaluated on the official 7,180-sample test split.
-
-### Primary Results Table (Test & Validation Splits)
-
-| Run ID | Algorithm | Random Seed | FedProx $\mu$ | Duration | Best Val Acc | Test Accuracy | Test Loss | Test Macro-F1 | Status |
-|:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1** | FedAvg | 42 | N/A | 5.11 min | 76.15% | **77.56%** | 0.7595 | 0.7130 | Verified |
-| **2** | FedProx | 42 | 0.01 | 8.74 min | 75.05% | **74.26%** | 0.8277 | 0.6812 | Verified |
-| **3** | FedAvg | 101 | N/A | 7.75 min | 78.98% | **81.06%** | 0.5940 | 0.7373 | Verified |
-| **4** | FedProx | 101 | 0.01 | 8.66 min | 74.30% | **79.55%** | 0.6505 | 0.7308 | Verified |
-| **5** | FedAvg | 2024 | N/A | 15.04 min | 72.83% | **73.12%** | 0.8200 | 0.6853 | Verified |
-| **6** | FedProx | 2024 | 0.01 | 9.08 min | 69.64% | **70.31%** | 0.9452 | 0.6419 | Verified |
-| **Mean $\pm$ Std** | **FedAvg** | **3 Seeds** | **N/A** | **9.30 min** | **$75.99\% \pm 2.51\%$** | **$77.25\% \pm 3.25\%$** | **$0.7245 \pm 0.096$** | **$0.7118 \pm 0.021$** | **Complete** |
-| **Mean $\pm$ Std** | **FedProx** | **3 Seeds** | **0.01** | **8.83 min** | **$73.00\% \pm 2.39\%$** | **$74.71\% \pm 3.79\%$** | **$0.8078 \pm 0.121$** | **$0.6846 \pm 0.036$** | **Complete** |
-| **Difference** | **FedProx - FedAvg** | - | - | - | **$-2.99\text{ pp}$** | **$-2.54\text{ pp}$** | **$+0.0833$** | **$-0.0272$** | - |
+- **Host Environment:** Windows 11 (64-bit AMD64), Intel Core i5-1240P CPU (12 cores, 16 threads), 8 GB RAM.
+- **Compute Optimization:** Single-node CPU sequential execution (`dataloader num_workers: 0`, 4 intra-op threads) to eliminate inter-process contention and maintain memory utilization under 600 MB.
+- **Seeds:** 3 independent trials (`seed = 42`, `101`, `2024`) with cryptographically verified, bit-level identical initial model weights for paired runs.
+- **Communication Rounds:** 5 rounds per trial.
+- **Local Epochs:** 2 local epochs per client per round (10 local epochs total per client; 50 local client passes per experiment).
+- **Batch Size:** 32 (SGD optimizer, local learning rate $\eta = 0.01$, momentum $0.0$, weight decay $0.0$).
 
 ---
 
-## 4. Empirical Findings & Theoretical Insights
+## 4. Dataset Details
 
-### 4.1 Convergence Dynamics
-- **Early-Round Optimization Progress:** Both algorithms achieved monotonic convergence. However, FedAvg attained higher test accuracy ($+2.54$ percentage points) in the 5-round budget.
-- **The Proximal Braking Effect:** The proximal term $\frac{\mu}{2}\|w - w^t\|^2$ penalizes parameter displacement, acting as an optimization brake when the global model is far from convergence. While this provides mathematical stability over long communication horizons, it slows parameter advancement in short computational budgets ($R = 5$).
+- **Dataset:** **PathMNIST** (MedMNIST v3.0.2), histological image patches from human colorectal cancer and normal tissue ($28 \times 28 \times 3$ RGB images).
+- **Samples:** 89,996 training samples, 10,004 validation samples, 7,180 test samples across 9 tissue classes:
+  - Class 0: Adipose (ADI)
+  - Class 1: Background (BACK)
+  - Class 2: Debris (DEB)
+  - Class 3: Lymphocytes (LYM)
+  - Class 4: Mucus (MUC)
+  - Class 5: Smooth muscle (MUS)
+  - Class 6: Normal colon mucosa (NORM)
+  - Class 7: Cancer-associated stroma (STR)
+  - Class 8: Colorectal adenocarcinoma epithelium (TUM)
+- **Preprocessing:** Normalized dynamically from $[0, 255]$ uint8 to $[-1.0, 1.0]$ float32.
+
+---
+
+## 5. Federated Learning Configuration
+
+| Parameter | Configuration | Justification |
+| :--- | :--- | :--- |
+| **Number of Clients ($K$)** | 5 | Models multi-center medical network |
+| **Client Participation** | 100% ($C = 1.0$) | Deterministic tracking across all rounds |
+| **Aggregation Rule** | Sample-weighted FedAvg | $\sum_{k=0}^{K-1} \frac{n_k}{N} \Delta w_k$ |
+| **Communication Rounds** | 5 | Calibrated research computation horizon |
+| **Local Epochs ($E$)** | 2 | Balance local optimization vs client drift |
+| **FedProx Regularizer ($\mu$)** | $0.01$ (FedProx) / $0.0$ (FedAvg) | Standard calibrated proximal penalty |
+
+---
+
+## 6. FedAvg vs FedProx Methodology
+
+### Federated Averaging (FedAvg)
+Each client $k$ minimizes local empirical loss:
+$$\min_{w} F_k(w) = \frac{1}{n_k} \sum_{i=1}^{n_k} \mathcal{L}(f(x_i; w), y_i)$$
+The server aggregates client parameter updates weighted by sample fraction:
+$$w^{t+1} = w^t + \sum_{k=0}^{K-1} \frac{n_k}{N} (w_k^{t+1} - w^t)$$
+
+### Federated Proximal (FedProx)
+Each client minimizes local empirical loss augmented with an explicit proximal distance penalty:
+$$\min_{w} h_k(w; w^t) = F_k(w) + \frac{\mu}{2} \|w - w^t\|_2^2$$
+Local gradient update step:
+$$w \leftarrow w - \eta \left( \nabla F_k(w) + \mu (w - w^t) \right)$$
+The proximal term pulls the local model toward the global model $w^t$, acting as a regularizer against divergence caused by local data heterogeneity.
+
+---
+
+## 7. Non-IID Partitioning & Label-Noise Injection
+
+### Dirichlet Partitioning ($\alpha = 0.3$)
+The 89,996 training samples are partitioned across the 5 clients using a Dirichlet distribution $\text{Dir}(\alpha)$ over class proportions with $\alpha = 0.3$, creating severe statistical heterogeneity:
+- Client class proportions vary widely; several clients have sparse representation for specific classes.
+- Canonical partitions for seeds 42, 101, and 2024 are serialized in `src/data/partitions/` and verified with SHA-256 checksums to ensure identical client data assignments.
+
+### Client-Specific Label Noise ($40\%$ on Client 0)
+- **Client 0 (Corrupted Node):** Exactly $40\%$ of training labels are uniformly replaced with random incorrect classes $y' \in \{0, \dots, 9\} \setminus \{y\}$.
+- **Clients 1–4 (Clean Nodes):** $0\%$ label noise (ground-truth labels preserved).
+- The server is unassisted by noise indicators; it performs standard aggregation.
+
+---
+
+## 8. Model Architecture
+
+Experiments utilize **FedAvgCNN** (583,113 trainable parameters), an established CNN architecture tailored for federated biomedical benchmarks:
+```text
+Input: (3, 28, 28)
+├── Conv2d(3 -> 32, kernel_size=3, padding=1) + BatchNorm2d + ReLU
+├── MaxPool2d(2, 2) -> (32, 14, 14)
+├── Conv2d(32 -> 64, kernel_size=3, padding=1) + BatchNorm2d + ReLU
+├── MaxPool2d(2, 2) -> (64, 7, 7)
+├── Flatten() -> 3,136 features
+├── Linear(3,136 -> 128) + ReLU + Dropout(p=0.25)
+└── Linear(128 -> 9) -> Output Logits
+```
+
+---
+
+## 9. System Architecture & Workflow
+
+```text
+┌────────────────────────────────────────────────────────┐
+│                   FederatedServer                      │
+│  - Distributes global model w^t                        │
+│  - Receives client updates Delta w_k                   │
+│  - Computes global update norm & cosine alignment      │
+│  - Evaluates global validation loss and accuracy       │
+│  - Executes sample-weighted parameter aggregation      │
+└───────────────────────────┬────────────────────────────┘
+                            │
+            ┌───────────────┴───────────────┐
+            ▼                               ▼
+┌───────────────────────────────┐ ┌───────────────────────────────┐
+│     Client 0 (Noisy 40%)      │ │     Clients 1–4 (Clean)       │
+│  - Dirichlet split (alpha=0.3)│ │  - Dirichlet split (alpha=0.3)│
+│  - 40% symmetric noise        │ │  - 0% noise (ground truth)    │
+│  - Local SGD (FedAvg/FedProx) │ │  - Local SGD (FedAvg/FedProx) │
+└───────────────────────────────┘ └───────────────────────────────┘
+```
+
+---
+
+## 10. Experimental Protocol & Reproducibility
+
+1. **Bit-Level Anchored Starting Weights:** Models are initialized using canonical weights pre-registered in `src/data/initial_models/` (`initial_model_seed{42,101,2024}.pt`).
+2. **Paired Execution:** For each random seed, FedAvg and FedProx execute on the exact same dataset partition, client noise injection, and initial model weights.
+3. **Independent Evaluation:** Global models are evaluated on the 10,004-sample validation split after each round, and the optimal model (`best_checkpoint.pt`) is evaluated on the 7,180-sample test split.
+
+---
+
+## 11. Final Benchmark Results
+
+### Primary Comparison Table (Aggregate over 3 Seeds)
+
+| Metric | FedAvg ($\mu = 0$) | FedProx ($\mu = 0.01$) | Difference | Empirical Significance |
+| :--- | :---: | :---: | :---: | :--- |
+| **Test Accuracy** | **77.25% ± 3.25%** | 74.71% ± 3.79% | -2.54 pp | FedAvg leads in short horizon |
+| **Test Loss** | **0.7245 ± 0.0955** | 0.8078 ± 0.1212 | +0.0833 | FedAvg converges faster initially |
+| **Test Macro-F1** | **0.7118 ± 0.0213** | 0.6846 ± 0.0364 | -0.0272 | Consistent across classes |
+| **Best Validation Accuracy** | **75.99%** | 73.00% | -2.99 pp | Observed across communication rounds |
+| **Global Update Norm $\|\Delta w_{\text{global}}\|$** | 2.4838 ± 0.2521 | **1.7388 ± 0.1239** | **-29.99%** | **Definitive proximal shrinkage** |
+| **Noisy Client 0 Norm $\|\Delta w_0\|$** | 3.6420 ± 0.3626 | **2.3229 ± 0.0450** | **-36.22%** | **Strong noise dampening** |
+| **Clean Clients 1–4 Norm** | 4.0579 ± 0.4302 | **2.7683 ± 0.2075** | **-31.78%** | Drift constraint on clean nodes |
+| **Clean Clients Cosine Alignment** | 0.5175 ± 0.0479 | **0.5976 ± 0.0373** | **+15.48%** | Tighter consensus alignment |
+
+### Individual Trial Breakdown
+
+| Run ID | Algorithm | Seed | Best Val Acc | Test Acc | Test Loss | Test Macro-F1 | Class 8 Acc (Tumor) | Global Norm (R5) |
+|:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1** | FedAvg | 42 | 76.15% | **77.56%** | 0.7595 | 0.7130 | 79.72% | 2.3855 |
+| **2** | FedProx | 42 | 75.05% | 74.26% | 0.8277 | 0.6812 | **80.54%** | **1.7438** |
+| **3** | FedAvg | 101 | 78.98% | **81.06%** | 0.5940 | 0.7373 | 92.13% | 2.8297 |
+| **4** | FedProx | 101 | 74.30% | 79.55% | 0.6505 | 0.7308 | **92.70%** | **1.8879** |
+| **5** | FedAvg | 2024 | 72.83% | **73.12%** | 0.8200 | 0.6853 | 64.96% | 2.2361 |
+| **6** | FedProx | 2024 | 69.64% | 70.31% | 0.9452 | 0.6419 | **69.67%** | **1.5846** |
+
+---
+
+## 12. Global & Per-Client Performance Analysis
+
+- **Optimization Pace:** Both algorithms achieved monotonic convergence over the 5 rounds. However, in this 5-round horizon, FedAvg achieved higher test accuracy (+2.54 pp).
+- **The Proximal Regularization Tradeoff:** The proximal penalty $\frac{\mu}{2}\|w - w^t\|^2$ penalizes displacement from $w^t$. Early in training, when the consensus is far from the empirical optimum, this penalty acts as a conservative constraint, slowing convergence speed in short round budgets.
+- **Histological Class Performance:** On specific malignant tissue—**colorectal adenocarcinoma epithelium (Class 8)**—FedProx consistently outperformed FedAvg across all three seeds ($80.97\%$ vs $78.94\%$, $+2.03\text{ pp}$ gain), suggesting that proximal regularization protected tumor representation features from degradation under label corruption.
+
+---
+
+## 13. Update Norm & Cosine Alignment Analysis
+
+Tracking parameter displacement vectors $\Delta w_k^t = w_k^{t, E} - w^t$ provides mathematical confirmation of FedProx's proximal mechanics:
+
+1. **Global Update Shrinkage:** FedProx reduced the global update norm from $2.4838 \pm 0.2521$ to $1.7388 \pm 0.1239$ (**$-29.99\%$ shrinkage**).
+2. **Noise Gradient Dampening:** On corrupted Client 0, FedProx reduced parameter displacement from $3.6420 \pm 0.3626$ to $2.3229 \pm 0.0450$ (**$-36.22\%$ dampening**), constraining corrupt updates.
+3. **Clean Alignment Improvement:** Clean clients (Clients 1–4) exhibited higher directional cosine alignment with the global consensus under FedProx ($0.5976 \pm 0.0373$ vs $0.5175 \pm 0.0479$, a **$+15.48\%$ gain**).
+4. **Noisy Client Decoupling:** Client 0 exhibited low cosine alignment under both algorithms ($\approx 0.24$), demonstrating that label noise misaligns update trajectories relative to the consensus manifold.
+
+---
+
+## 14. Research Findings & Visualizations
+
+### Visualizations
 
 <p align="center">
   <img src="figures/fig1_val_accuracy_vs_rounds.png" width="48%" alt="Validation Accuracy vs Rounds" />
   <img src="figures/fig2_val_loss_vs_rounds.png" width="48%" alt="Validation Loss vs Rounds" />
 </p>
-
-### 4.2 Update Geometry & Empirical Proof of Proximal Shrinkage
-Tracking parameter displacement vectors $\Delta_k^t = w_k^{t, E} - w^t$ revealed definitive proof of FedProx's regularizing effect:
-
-| Geometry Metric (Round 5) | FedAvg ($\mu = 0$) | FedProx ($\mu = 0.01$) | Relative Change | Research Significance |
-|---|:---:|:---:|:---:|---|
-| **Global Update Norm $\|\Delta w_{\text{global}}\|$** | $2.4838 \pm 0.2521$ | **$1.7388 \pm 0.1239$** | **$-29.99\%$** | Substantial consensus displacement reduction |
-| **Noisy Client 0 Norm $\|\Delta w_0\|$** | $3.6420 \pm 0.3626$ | **$2.3229 \pm 0.0450$** | **$-36.22\%$** | **Damps corrupted gradient updates by 36%** |
-| **Clean Clients 1-4 Norm $\|\Delta w_{\text{clean}}\|$** | $4.0579 \pm 0.4302$ | **$2.7683 \pm 0.2075$** | **$-31.78\%$** | Constrains client drift from global model |
-| **Clean Clients Cosine Alignment** | $0.5175 \pm 0.0479$ | **$0.5976 \pm 0.0373$** | **$+15.48\%$** | Clean updates align tighter toward consensus |
-| **Noisy Client 0 Cosine Alignment** | $0.2387 \pm 0.1357$ | $0.2449 \pm 0.1192$ | $+0.0062$ | Noise decouples Client 0 direction from manifold |
+<p align="center"><em>Figure 1 & 2: Global validation accuracy and loss trajectories across 5 communication rounds.</em></p>
 
 <p align="center">
   <img src="figures/fig3_update_norm_shrinkage.png" width="48%" alt="Update Norm Shrinkage" />
   <img src="figures/fig4_update_cosine_alignment.png" width="48%" alt="Update Cosine Alignment" />
 </p>
+<p align="center"><em>Figure 3 & 4: (Left) Global and client update norm shrinkage at Round 5. (Right) Clean client cosine alignment.</em></p>
 
 <p align="center">
-  <img src="figures/fig5_pairwise_cosine_heatmaps.png" width="80%" alt="Pairwise Cosine Similarity Heatmaps" />
+  <img src="figures/fig5_pairwise_cosine_heatmaps.png" width="85%" alt="Pairwise Cosine Similarity Heatmaps" />
 </p>
-
-### 4.3 Per-Class Histological Performance
-On the 9 colorectal histology tissue classes, both algorithms achieved $100.0\%$ accuracy on background (Class 1) and $>90\%$ on adipose (Class 0). Cancer-associated stroma (Class 7) was the most challenging ($\approx 30–32\%$) due to morphological variance. Crucially, on **colorectal adenocarcinoma epithelium (Class 8)**, FedProx surpassed FedAvg by **$+2.03\text{ pp}$** ($80.97\%$ vs $78.94\%$), showing that proximal shrinkage preserved malignant tumor feature representations against client class skew and label corruption.
+<p align="center"><em>Figure 5: Pairwise client cosine similarity matrices at Round 5 (averaged over 3 seeds).</em></p>
 
 <p align="center">
   <img src="figures/fig6_per_class_test_accuracy.png" width="85%" alt="Per-Class Test Accuracy" />
 </p>
+<p align="center"><em>Figure 6: Per-class test accuracy across the 9 histological tissue classes.</em></p>
 
 ---
 
-## 5. System Architecture & Directory Structure
+## 15. Installation & Setup
 
-```	ext
-fl_benchmark/
-├── configs/                     # Centralized YAML configurations
-│   ├── base.yaml                # Calibrated baseline & hardware parameters
-│   ├── fedavg.yaml              # FedAvg algorithm specification
-│   └── fedprox.yaml             # FedProx algorithm specification (mu=0.01)
-├── data/                        # PathMNIST loading, partitioning & noise
-│   ├── download.py              # MD5 verification (a8b06965200029087d5bd730944a56c1)
-│   ├── preprocessing.py         # On-the-fly uint8 -> float32 [-1, 1] normalization
-│   ├── pathmnist_dataset.py     # In-memory Dataset using zero-copy indices
-│   ├── partition.py             # Class-wise Dirichlet non-IID partitioning
-│   ├── noise.py                 # Controlled 40% symmetric noise injection
-│   ├── validation.py            # Dataset split & partition auditor
-│   ├── partitions/              # Canonical serialized NPZ partitions (Seeds 42, 101, 2024)
-│   └── initial_models/          # Bit-level canonical initial model weights (.pt)
-├── models/                      # FedAvgCNN architecture (583,113 parameters)
-├── federated/                   # Sequential federated client/server orchestrator
-│   ├── client.py                # Base client interface
-│   ├── server.py                # Server coordinating sequential training & geometry
-│   ├── aggregation.py           # Sample-weighted model parameter aggregation
-│   ├── fedavg.py                # Standard FedAvg client implementation
-│   └── fedprox.py               # FedProx client with explicit proximal regularizer
-├── metrics/                     # Loss, accuracy, macro-F1, update geometry engine
-├── tracking/                    # Local JSONL logger & safe non-blocking W&B adapter
-├── utils/                       # Seeds, device threads, atomic checkpoints, memory monitor
-├── tests/                       # Complete 30-test automated suite (pytest)
-├── scripts/                     # Master matrix runner, figure & PDF generators
-│   ├── run_primary_matrix.py    # Master benchmark matrix with recovery guard
-│   ├── generate_publication_figures.py # 300 DPI PNG & vector PDF figure generator
-│   ├── generate_research_summary_pdf.py # Formal 6-page research report compiler
-│   └── import_to_wandb.py       # Post-hoc W&B telemetry importer
-├── figures/                     # Generated publication-quality figures
-├── results/
-│   ├── primary_benchmark/       # Isolated 6-run benchmark outputs & metrics
-│   └── README.md                # Results taxonomy and provenance catalog
-├── RESEARCH_SUMMARY.pdf         # Publication-grade multi-page research summary PDF
-├── REPRODUCIBILITY.md           # Step-by-step reproduction instructions
-├── requirements.txt             # Pinned Python dependencies
-└── pyproject.toml               # Package configuration
-```
+### Prerequisites
+- Python 3.11+
+- PyTorch 2.0+ (CPU or CUDA)
 
----
-
-## 6. Installation & Quick Start
-
-### 6.1 Environment Setup
+### Installation
 ```bash
-# Clone or navigate to repository
-cd D:\Reasearch\fl_benchmark
+# Clone the repository
+git clone https://github.com/Nanditha264/Phoenix-Federated-Learning.git
+cd Phoenix-Federated-Learning
 
-# Activate Python 3.11 research virtual environment
-..\fl_env\Scripts\activate
-
-# Verify dependencies
-pip check
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### 6.2 Run Automated Test Suite
+---
+
+## 16. Reproduction Commands
+
+### 1. Verify Dataset & Canonical Partitions
+```bash
+python scripts/generate_dataset.py
+```
+
+### 2. Run Automated Test Suite
 ```bash
 pytest tests/ -v
-# 30 passed in ~27s
+# 30 passed
 ```
 
-### 6.3 Execute Benchmark Matrix
+### 3. Run a Single Experiment
 ```bash
-# Runs all 6 paired runs with automatic recovery guard
+# Run FedAvg on Seed 42
+python run_benchmark.py --config configs/base.yaml --algorithm fedavg --seed 42 --rounds 5 --eval_test
+
+# Run FedProx on Seed 42
+python run_benchmark.py --config configs/base.yaml --algorithm fedprox --seed 42 --rounds 5 --mu 0.01 --eval_test
+```
+
+### 4. Run the Full Matrix
+```bash
 python scripts/run_primary_matrix.py
 ```
 
-### 6.4 Generate Figures and PDF Report
+### 5. Re-evaluate Checkpoints on Test Split
 ```bash
-# Export all 6 figures to figures/ (300 DPI PNG + vector PDF)
+python scripts/verify_checkpoints_independent.py
+```
+
+### 6. Re-generate Publication Figures & Research Summary PDF
+```bash
+# Generate PNG (300 DPI) and PDF figures
 python scripts/generate_publication_figures.py
 
-# Compile formal 6-page RESEARCH_SUMMARY.pdf
+# Compile formal research summary PDF
 python scripts/generate_research_summary_pdf.py
 ```
 
 ---
 
-## 7. Limitations & Threats to Validity
+## 17. Weights & Biases (W&B) Experiment Tracking
 
-1. **Short Communication Horizon ($R = 5$):** Experiments were capped at 5 rounds (10 local epochs per client) to execute within local CPU hardware constraints. Asymptotic convergence ($R \ge 20$) may reveal benefits for FedProx as client drift compounds over extended training horizons.
-2. **Fixed Proximal Coefficient ($\mu = 0.01$):** Only $\mu = 0.01$ was evaluated across all three seeds. Adaptive or client-specific proximal penalties might preserve stability without slowing early-round convergence.
-3. **Sequential Execution:** Executed sequentially on CPU (`num_workers = 0`, 4 threads) to prevent memory exhaustion and thread contention. Real-world distributed network latency was not modeled.
-4. **Statistical Testing Scope:** Reported metrics reflect empirical mean and standard deviation across three random seeds ($N = 3$). Differences represent observed performance trends rather than formal claims of asymptotic statistical significance under hypothesis testing.
-5. **No Clinical Diagnostic Applicability:** MedMNIST PathMNIST consists of downsampled $28 \times 28$ histological image patches designed strictly as a machine learning benchmark. These experimental findings evaluate optimization and regularization dynamics and must not be interpreted as validated for clinical diagnostics or medical decision support.
+The repository provides local JSONL logging by default (`tracking/local_logger.py`). For optional cloud experiment tracking, a dedicated post-hoc importer is included:
+```bash
+# Log in to Weights & Biases
+wandb login
+
+# Import completed benchmark telemetry to project
+python scripts/import_to_wandb.py --project fedavg-vs-fedprox-pathmnist
+```
+*Note: Telemetry import is post-hoc and does not modify local experiment records.*
+
 ---
 
-## 8. Reproducibility & Research Submission Links
+## 18. Project Structure
 
-- **Step-by-Step Reproduction Guide:** [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)
-- **Comprehensive Benchmark Completion Report:** [`PHASE5_BENCHMARK_COMPLETION_REPORT.md`](PHASE5_BENCHMARK_COMPLETION_REPORT.md)
-- **Publication Summary PDF:** [`RESEARCH_SUMMARY.pdf`](RESEARCH_SUMMARY.pdf)
-- **Pristine Reference Repository:** [`D:\Reasearch\PFLlib-upstream`](../PFLlib-upstream)
+```text
+Phoenix-Federated-Learning/
+├── .gitignore                          # Standard Python / PyTorch ignore rules
+├── LICENSE                             # MIT License
+├── pyproject.toml                      # Package build configuration
+├── requirements.txt                    # Pinned research dependencies
+├── README.md                           # Main research documentation
+├── run_benchmark.py                    # Primary benchmark entry point
+│
+├── configs/                            # Centralized experiment YAML configurations
+│   ├── base.yaml                       # Baseline hardware & training hyperparameters
+│   ├── fedavg.yaml                     # FedAvg specific parameters
+│   └── fedprox.yaml                    # FedProx (mu=0.01) specific parameters
+│
+├── docs/                               # Formal research deliverables
+│   ├── reproducibility.md              # Detailed reproduction protocol
+│   └── research_summary.pdf            # 6-page formal research summary report
+│
+├── figures/                            # 300 DPI PNG & vector PDF publication figures
+│   ├── fig1_val_accuracy_vs_rounds.{png,pdf}
+│   ├── fig2_val_loss_vs_rounds.{png,pdf}
+│   ├── fig3_update_norm_shrinkage.{png,pdf}
+│   ├── fig4_update_cosine_alignment.{png,pdf}
+│   ├── fig5_pairwise_cosine_heatmaps.{png,pdf}
+│   ├── fig6_per_class_test_accuracy.{png,pdf}
+│   └── figure_source_data_mapping.json # Mapping from figures to underlying metrics
+│
+├── results/                            # Experimental metrics and evaluations
+│   ├── README.md                       # Results catalog and taxonomy
+│   └── primary_benchmark/              # 6 primary benchmark runs
+│       ├── comparative_analysis.json   # Aggregated cross-seed metrics
+│       ├── detailed_table.json         # Per-round and per-class metrics
+│       ├── matrix_execution_summary.json # High-level execution log
+│       └── <run_name>/                 # Run telemetry & best_checkpoint.pt
+│
+├── scripts/                            # Execution, analysis, and verification scripts
+│   ├── analyze_results.py              # Statistical aggregation engine
+│   ├── extract_detailed_metrics.py     # JSON metric extractor
+│   ├── generate_dataset.py             # Dataset setup & partition verifier
+│   ├── generate_publication_figures.py # Publication figure exporter
+│   ├── generate_research_summary_pdf.py# PDF report compiler
+│   ├── import_to_wandb.py              # W&B post-hoc telemetry importer
+│   ├── register_initial_models.py      # Canonical model initialization script
+│   ├── run_experiment.py               # Flexible experiment launcher
+│   ├── run_primary_matrix.py           # 6-run matrix orchestrator with recovery guard
+│   ├── run_smoke_test.py               # Lightweight fast test runner
+│   ├── scan_secrets.py                 # Automated regex secret scanner
+│   └── verify_checkpoints_independent.py # Independent test split evaluator
+│
+├── src/                                # Core implementation source code
+│   ├── __init__.py                     # Package init
+│   ├── data/                           # PathMNIST loading, partitioning & noise
+│   │   ├── download.py                 # Dataset verification & download
+│   │   ├── noise.py                    # Label noise injection
+│   │   ├── partition.py                # Dirichlet class partitioner
+│   │   ├── pathmnist_dataset.py        # PyTorch Dataset implementation
+│   │   ├── preprocessing.py            # Dynamic data normalization
+│   │   ├── validation.py               # Partition validator
+│   │   ├── initial_models/             # Canonical initial model checkpoints
+│   │   └── partitions/                 # Canonical NPZ Dirichlet partitions
+│   ├── evaluation/                     # Evaluation utilities
+│   │   ├── client_evaluator.py         # Local client evaluation
+│   │   └── evaluator.py                # Global test & validation evaluator
+│   ├── federated/                      # Federated learning implementations
+│   │   ├── aggregation.py              # Parameter aggregation functions
+│   │   ├── client.py                   # Base federated client
+│   │   ├── fedavg.py                   # FedAvg client
+│   │   ├── fedprox.py                  # FedProx client with proximal penalty
+│   │   └── server.py                   # Federated coordination server
+│   ├── metrics/                        # Metrics computation
+│   │   ├── accuracy.py                 # Classification accuracy
+│   │   ├── loss.py                     # Loss tracking
+│   │   └── update_geometry.py          # Norm & cosine geometry engine
+│   ├── models/                         # Neural network architectures
+│   │   ├── cnn.py                      # FedAvgCNN architecture
+│   │   └── model_factory.py            # Model factory function
+│   ├── tracking/                       # Logging implementations
+│   │   ├── local_logger.py             # Local structured JSONL logger
+│   │   └── wandb_logger.py             # Non-blocking W&B adapter
+│   └── utils/                          # Hardware & execution utilities
+│       ├── checkpoint.py               # Atomic checkpoint manager
+│       ├── configuration.py            # YAML configuration loader
+│       ├── device.py                   # Threading & device configuration
+│       ├── resource_monitor.py         # CPU & RAM telemetry monitor
+│       └── seed.py                     # Deterministic seed manager
+│
+└── tests/                              # Automated test suite (30 pytest tests)
+    ├── test_data.py                    # Dataset & preprocessing tests
+    ├── test_evaluation.py              # Evaluation metrics tests
+    ├── test_fedavg.py                  # FedAvg client tests
+    ├── test_fedprox.py                 # FedProx client & proximal loss tests
+    ├── test_integration.py             # End-to-end integration tests
+    ├── test_metrics.py                 # Geometry & loss tests
+    ├── test_models.py                  # Model architecture tests
+    ├── test_noise.py                   # Label noise injection tests
+    ├── test_partition.py              # Dirichlet partition tests
+    └── test_tracking.py               # Logger tests
+```
+
+---
+
+## 19. Limitations & Threats to Validity
+
+1. **Short Communication Horizon ($R = 5$):** Experiments were capped at 5 communication rounds (10 local epochs per client) to execute reliably within local CPU hardware constraints. While FedAvg attained higher accuracy within this early window (+2.54 pp), asymptotic training ($R \ge 20$) may reveal benefits for FedProx as client drift compounds over extended horizons.
+2. **Fixed Proximal Penalty ($\mu = 0.01$):** A single fixed proximal coefficient was evaluated across all trials. Adaptive or decay-scheduled $\mu$ strategies may provide stability without constraining early convergence.
+3. **Statistical Sample Size ($N = 3$):** Results reflect empirical performance across 3 independent random seeds. They represent observed experimental trends rather than formal asymptotic statistical significance.
+4. **Clinical Non-Applicability:** PathMNIST patches ($28 \times 28$ pixels) are an algorithmic research benchmark. Findings evaluate machine learning optimization and regularization dynamics and must not be used for diagnostic or clinical decision support.
+
+---
+
+## 20. References
+
+1. **McMahan, B., Moore, E., Ramage, D., Hampson, S., & y Arcas, B. A.** (2017). Communication-Efficient Learning of Deep Networks from Decentralized Data. *Artificial Intelligence and Statistics (AISTATS)*.
+2. **Li, T., Sahu, A. K., Zaheer, M., Sanjabi, M., Talwalkar, A., & Smith, V.** (2020). Federated Optimization in Heterogeneous Networks. *Proceedings of Machine Learning and Systems (MLSys)*.
+3. **Yang, J., Shi, R., Wei, D., Liu, Z., Zhao, L., Ke, B., ... & Ni, B.** (2023). MedMNIST v2-A large-scale lightweight benchmark for 2D and 3D biomedical image classification. *Scientific Data*, 10(1), 41.
+4. **Zhang, J., et al.** (2023). PFLlib: A Personalized Federated Learning Benchmark. *arXiv preprint arXiv:2307.03450*.
+
+---
+
+## 21. License & Acknowledgements
+
+- **License:** Released under the [MIT License](LICENSE).
+- **Acknowledgements:** Developed as part of the IndiaAI Fellowship screening assignment research on Federated Learning optimization under statistical and system heterogeneity. Upstream reference architecture derived from [PFLlib](https://github.com/TsingZ0/PFLlib).

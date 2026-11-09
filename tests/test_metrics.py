@@ -6,8 +6,8 @@ import torch
 import numpy as np
 import pytest
 
-from fl_benchmark.metrics.accuracy import compute_accuracy, compute_classification_metrics
-from fl_benchmark.metrics.update_geometry import (
+from src.metrics.accuracy import compute_accuracy, compute_classification_metrics
+from src.metrics.update_geometry import (
     compute_vector_norm,
     compute_cosine_similarity,
     analyze_update_geometry,

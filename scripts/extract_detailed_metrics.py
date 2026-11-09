@@ -5,7 +5,7 @@ Extract detailed per-class and per-client validation metrics for Phase 5 Report.
 import json
 from pathlib import Path
 
-BENCHMARK_DIR = Path(r"D:\Reasearch\fl_benchmark\results\primary_benchmark")
+BENCHMARK_DIR = Path(__file__).resolve().parent.parent / "results" / "primary_benchmark"
 SEEDS = [42, 101, 2024]
 RUNS = [
     ("fedavg", 42, "fedavg_dir0.3_noise0.4_seed42"),

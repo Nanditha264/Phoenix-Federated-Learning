@@ -4,8 +4,8 @@ Unit Tests for PathMNIST CNN Architecture.
 
 import torch
 import pytest
-from fl_benchmark.models.cnn import FedAvgCNN
-from fl_benchmark.models.model_factory import create_model
+from src.models.cnn import FedAvgCNN
+from src.models.model_factory import create_model
 
 
 def test_fedavg_cnn_parameter_count():

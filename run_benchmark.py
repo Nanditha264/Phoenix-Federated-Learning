@@ -18,23 +18,23 @@ for p in [str(PROJECT_ROOT), str(WORKSPACE_ROOT)]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from fl_benchmark.utils.seed import set_seed
-from fl_benchmark.utils.device import setup_device, get_cpu_info
-from fl_benchmark.utils.configuration import load_yaml, deep_merge
-from fl_benchmark.utils.resource_monitor import FederatedResourceMonitor
-from fl_benchmark.utils.checkpoint import CheckpointManager
-from fl_benchmark.data.download import ensure_pathmnist_downloaded
-from fl_benchmark.data.pathmnist_dataset import load_pathmnist_raw, PathMNISTDataset
-from fl_benchmark.data.partition import dirichlet_partition, compute_partition_stats
-from fl_benchmark.data.noise import inject_symmetric_noise
-from fl_benchmark.data.validation import partition_validation_set
-from fl_benchmark.models.model_factory import create_model
-from fl_benchmark.federated.fedavg import FedAvgClient
-from fl_benchmark.federated.fedprox import FedProxClient
-from fl_benchmark.federated.server import FederatedServer
-from fl_benchmark.tracking.local_logger import LocalLogger
-from fl_benchmark.tracking.wandb_logger import WandbLogger
-from fl_benchmark.evaluation.evaluator import GlobalEvaluator
+from src.utils.seed import set_seed
+from src.utils.device import setup_device, get_cpu_info
+from src.utils.configuration import load_yaml, deep_merge
+from src.utils.resource_monitor import FederatedResourceMonitor
+from src.utils.checkpoint import CheckpointManager
+from src.data.download import ensure_pathmnist_downloaded
+from src.data.pathmnist_dataset import load_pathmnist_raw, PathMNISTDataset
+from src.data.partition import dirichlet_partition, compute_partition_stats
+from src.data.noise import inject_symmetric_noise
+from src.data.validation import partition_validation_set
+from src.models.model_factory import create_model
+from src.federated.fedavg import FedAvgClient
+from src.federated.fedprox import FedProxClient
+from src.federated.server import FederatedServer
+from src.tracking.local_logger import LocalLogger
+from src.tracking.wandb_logger import WandbLogger
+from src.evaluation.evaluator import GlobalEvaluator
 
 
 def parse_args():

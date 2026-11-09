@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.image as mpimg
 
-PDF_PATH = PROJECT_ROOT / "RESEARCH_SUMMARY.pdf"
+PDF_PATH = PROJECT_ROOT / "docs" / "research_summary.pdf"
 FIGURES_DIR = PROJECT_ROOT / "figures"
 BENCHMARK_DIR = PROJECT_ROOT / "results" / "primary_benchmark"
 
@@ -438,24 +438,23 @@ with PdfPages(PDF_PATH) as pdf:
     # Reproducibility box
     ax.text(0.08, 0.44, "11. Exact Reproducibility Instructions", fontsize=11, fontweight="bold", color="#333333")
     repro_text = (
-        "# 1. Activate Environment\n"
-        "cd D:\\Reasearch\\fl_benchmark\n"
-        "..\\fl_env\\Scripts\\activate\n\n"
-        "# 2. Verify Canonical Partitions & Initial Model Checksums\n"
-        "python -c \"import hashlib, glob; [print(f, hashlib.sha256(open(f,'rb').read()).hexdigest()[:16]) for f in glob.glob('data/partitions/*.npz')]\"\n\n"
-        "# 3. Execute Master Primary Matrix (All 6 Runs with Six-Factor Recovery Guard)\n"
+        "# 1. Setup Environment\n"
+        "git clone https://github.com/Nanditha264/Phoenix-Federated-Learning.git\n"
+        "cd Phoenix-Federated-Learning && pip install -r requirements.txt\n\n"
+        "# 2. Verify Canonical Partitions & Run Test Suite\n"
+        "python scripts/generate_dataset.py && pytest tests/ -v\n\n"
+        "# 3. Execute Primary Benchmark Matrix (All 6 Runs with Recovery Guard)\n"
         "python scripts/run_primary_matrix.py\n\n"
-        "# 4. Generate All Publication Figures (300 DPI PNG & Vector PDF)\n"
-        "python scripts/generate_publication_figures.py\n\n"
-        "# 5. Re-compile This Research Summary PDF\n"
+        "# 4. Generate Publication Figures & Re-compile PDF Report\n"
+        "python scripts/generate_publication_figures.py\n"
         "python scripts/generate_research_summary_pdf.py"
     )
     ax.fill_between([0.08, 0.92], [0.14, 0.14], [0.42, 0.42], color="#2d3748")
     ax.text(0.10, 0.16, repro_text, fontsize=8.2, color="#e2e8f0", family="monospace", linespacing=1.3)
 
     # Sign-off
-    ax.text(0.08, 0.09, "Principal Research Architect: Google DeepMind Advanced Agentic Coding Pair-Programming Assistant\n"
-                       "Repository: D:\\Reasearch\\fl_benchmark | Results Path: D:\\Reasearch\\fl_benchmark\\results\\primary_benchmark",
+    ax.text(0.08, 0.09, "Research Submission: IndiaAI Fellowship Program\n"
+                       "Repository: https://github.com/Nanditha264/Phoenix-Federated-Learning | Results: results/primary_benchmark",
             fontsize=8, color="#555555", family="sans-serif")
 
     pdf.savefig(fig)

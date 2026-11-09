@@ -7,9 +7,9 @@ import numpy as np
 import torch
 import pytest
 
-from fl_benchmark.data.preprocessing import get_default_transform
-from fl_benchmark.data.pathmnist_dataset import PathMNISTDataset, load_pathmnist_raw
-from fl_benchmark.data.download import compute_file_md5, ensure_pathmnist_downloaded
+from src.data.preprocessing import get_default_transform
+from src.data.pathmnist_dataset import PathMNISTDataset, load_pathmnist_raw
+from src.data.download import compute_file_md5, ensure_pathmnist_downloaded
 
 
 def test_preprocessing_transform():

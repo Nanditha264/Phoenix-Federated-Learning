@@ -2,7 +2,7 @@ import os
 import re
 from pathlib import Path
 
-root = Path(r"D:\Reasearch\fl_benchmark")
+root = Path(__file__).resolve().parent.parent
 secret_patterns = [
     re.compile(r"wandb_[a-zA-Z0-9]{30,}"),
     re.compile(r"ghp_[a-zA-Z0-9]{36}"),

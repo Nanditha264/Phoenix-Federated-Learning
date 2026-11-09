@@ -7,9 +7,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import pytest
 
-from fl_benchmark.evaluation.evaluator import GlobalEvaluator
-from fl_benchmark.evaluation.client_evaluator import ClientValidationEvaluator
-from fl_benchmark.data.validation import partition_validation_set
+from src.evaluation.evaluator import GlobalEvaluator
+from src.evaluation.client_evaluator import ClientValidationEvaluator
+from src.data.validation import partition_validation_set
 
 
 def test_global_evaluator():

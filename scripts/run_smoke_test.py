@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-PYTHON_EXE = r"D:\Reasearch\fl_env\Scripts\python.exe"
+PYTHON_EXE = sys.executable
 
 
 def run_smoke_test(algorithm="fedavg"):

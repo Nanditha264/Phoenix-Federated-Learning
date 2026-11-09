@@ -23,7 +23,7 @@ for p in [str(PROJECT_ROOT), str(WORKSPACE_ROOT)]:
 
 import torch
 
-PYTHON_EXE = r"D:\Reasearch\fl_env\Scripts\python.exe"
+PYTHON_EXE = sys.executable
 BENCHMARK_SCRIPT = PROJECT_ROOT / "run_benchmark.py"
 OUTPUT_BASE_DIR = PROJECT_ROOT / "results" / "primary_benchmark"
 OUTPUT_BASE_DIR.mkdir(parents=True, exist_ok=True)

@@ -10,13 +10,13 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import pytest
 
-from fl_benchmark.models.cnn import FedAvgCNN
-from fl_benchmark.federated.fedavg import FedAvgClient
-from fl_benchmark.federated.fedprox import FedProxClient
-from fl_benchmark.federated.server import FederatedServer
-from fl_benchmark.tracking.local_logger import LocalLogger
-from fl_benchmark.utils.checkpoint import CheckpointManager
-from fl_benchmark.utils.resource_monitor import FederatedResourceMonitor
+from src.models.cnn import FedAvgCNN
+from src.federated.fedavg import FedAvgClient
+from src.federated.fedprox import FedProxClient
+from src.federated.server import FederatedServer
+from src.tracking.local_logger import LocalLogger
+from src.utils.checkpoint import CheckpointManager
+from src.utils.resource_monitor import FederatedResourceMonitor
 
 
 def create_mock_synthetic_client_datasets(num_clients=5, samples_per_client=32):

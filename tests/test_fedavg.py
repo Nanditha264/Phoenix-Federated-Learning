@@ -8,9 +8,9 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset
 import pytest
 
-from fl_benchmark.models.cnn import FedAvgCNN
-from fl_benchmark.federated.fedavg import FedAvgClient
-from fl_benchmark.federated.aggregation import aggregate_models
+from src.models.cnn import FedAvgCNN
+from src.federated.fedavg import FedAvgClient
+from src.federated.aggregation import aggregate_models
 
 
 def test_sample_weighted_aggregation_math():
