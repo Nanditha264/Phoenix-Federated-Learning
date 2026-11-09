@@ -65,34 +65,54 @@ Prior documentation iterations displayed the aggregate mean values ($2.4838$ and
 ### 2.1 Repository Metadata
 - **Owner:** `Nanditha264`
 - **Repository Name:** `Phoenix-Federated-Learning`
-- **Target URL:** `https://github.com/Nanditha264/Phoenix-Federated-Learning`
+- **Live Public URL:** `https://github.com/Nanditha264/Phoenix-Federated-Learning`
 - **Configured Git Remote:** `https://github.com/Nanditha264/Phoenix-Federated-Learning.git`
-- **Branch:** `main`
-- **Intended Visibility:** **PUBLIC**
+- **Default Branch:** `main`
+- **Repository Visibility:** **PUBLIC** (HTTP 200 OK verified via unauthenticated request)
 - **Description:** `Reproducible federated learning benchmark comparing FedAvg and FedProx on PathMNIST under non-IID client partitioning and controlled label noise.`
+- **Published Commit SHA:** `f8c74f1403bc02f44cb13c178902678c828d3884` (Short SHA: `f8c74f1`)
+- **Remote Synchronization:** Upstream tracking configured (`origin/main`), fully synchronized.
 
 ### 2.2 Git Commit History
 ```text
-19a8ce8 (HEAD -> main) fix(reporting): clarify per-seed vs aggregate update norms and enrich detailed table
+f8c74f1 (HEAD -> main, origin/main) feat(wandb): add duplicate detection and stable run ID matching to importer
+13ae45b docs: update final publication release report with corrected per-seed norms and archive catalog
+19a8ce8 fix(reporting): clarify per-seed vs aggregate update norms and enrich detailed table
 a514489 docs: add final publication release report
 6a625ba docs: add post-hoc W&B importer and clarify clinical/statistical caveats in README
 0f27211 Initial research release: FedAvg vs FedProx on PathMNIST
 ```
-- **Tracked Assets:** 163 files (full source code, YAML configs, primary benchmark checkpoints and metrics, publication figures, PDF summary, reproducibility manual, and automated tests).
-- **Working Tree State:** Completely clean (`nothing to commit, working tree clean`).
-- **Security Audit:** Regex credential scan confirmed **0 secrets, 0 API keys, 0 private tokens**.
 
-### 2.3 Remote Destination Audit & Blocker Resolution
-- **Remote Check via GitHub API:** Queried `GET https://api.github.com/repos/Nanditha264/Phoenix-Federated-Learning`. The repository does not yet exist on GitHub (HTTP 404).
-- **Authentication Check via Git Helper:** The GitHub credentials stored in the local Windows Credential Manager returned `HTTP 401: Unauthorized ("Bad credentials")`, indicating an expired or revoked personal access token.
-- **Required Action to Publish:**
-  1. Generate a new Personal Access Token (classic) on GitHub with `repo` scope at: [https://github.com/settings/tokens](https://github.com/settings/tokens).
-  2. Create the remote repository `Phoenix-Federated-Learning` (Public) at: [https://github.com/new](https://github.com/new) (uncheck README/license init).
-  3. In your authenticated terminal, update your credentials and push:
-     ```powershell
-     cd D:\Reasearch\fl_benchmark
-     git push -u origin main
-     ```
+### 2.3 Tracked File Inventory & Structure
+- **Total Tracked Files:** 164 files
+- **Total Tracked Repository Size:** 117.03 MB
+- **Large File Compliance:** 0 files exceed GitHub's 50 MB / 100 MB limits (largest files are model checkpoints at 2.23 MB each).
+- **Directory Breakdown:**
+  - `.` (Root): 18 files (README.md, REPRODUCIBILITY.md, RESEARCH_SUMMARY.pdf, requirements.txt, environment.yaml, verification and audit reports)
+  - `configs/`: 3 files (base.yaml, fedavg.yaml, fedprox.yaml)
+  - `data/`: 14 files (PathMNIST canonical partition generators, splits, and verified MD5 hashes)
+  - `evaluation/`: 3 files (evaluator, per-class metrics, confusion matrices)
+  - `federated/`: 6 files (FedAvg and FedProx server and client implementations)
+  - `figures/`: 13 files (6 publication-quality figures in vector PDF and high-res PNG formats, plus FIGURE_DATA_MAPPING.md)
+  - `metrics/`: 4 files (update geometry, norm shrinkage, cosine similarity calculators)
+  - `models/`: 3 files (FedAvgCNN architecture, initialization, forward pass)
+  - `results/`: 65 files (6 primary benchmark runs, per-round JSONL telemetry, summary.json, checkpoints)
+  - `scripts/`: 15 files (primary matrix execution, figure generation, analysis, verification, W&B importer)
+  - `tests/`: 11 files (30 passing automated unit/integration tests)
+  - `tracking/`: 3 files (W&B logger, local JSONL logger)
+  - `utils/`: 6 files (seed manager, logger, compute configuration, directory management)
+
+### 2.4 Security & Integrity Audit
+- **Secret Scan Outcome:** Automated regex scan over all tracked text files confirmed **0 secrets, 0 API keys, 0 private tokens**.
+- **Working Tree State:** Clean, verified via `git status`.
+- **Automated Tests:** 30 / 30 tests passing (`pytest tests -q`).
+- **Independent Verification:** Forward pass across 7,180 test samples verified 0.000000 divergence from reported test metrics.
+
+### 2.5 Intentionally Excluded Assets & Rationale
+1. **Virtual Environments (`fl_env/`):** Excluded per `.gitignore`; standard dependency specifications provided via `requirements.txt` and `environment.yaml`.
+2. **MedMNIST Raw Download Cache (`data/cache/`):** Excluded to keep repository lean; canonical NPZ dataset checksum (`md5: 7f42713851b97d8f6737174fdd91f7aa`) verified in automated test suite and downloaded on-demand if absent.
+3. **Submission ZIP Archives (`*.zip`):** Preserved locally (`D:\Reasearch\*.zip`) as standalone versioned delivery bundles.
+4. **Historical Pilot Hang Logs (`results/primary_benchmark/diagnostic_attempt1_hang_logs/`):** Isolated per Phase 5 protocol to prevent cluttering primary benchmark results.
 
 ---
 
